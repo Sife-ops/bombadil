@@ -24,6 +24,7 @@
   },
   "workspaces": [
     "services",
+    "cli",
     "web"
   ]
 }

@@ -45,7 +45,7 @@ export const handler: Handler<
         const ctx = await Ctx.init(body);
 
         const commandName = ctx.getCommandName(0);
-        if (!["game"].includes(commandName)) {
+        if (!["game", "foo"].includes(commandName)) {
           try {
             const { started, playerIndex } = ctx.getGame();
             if (!started) throw new Error("game not started");

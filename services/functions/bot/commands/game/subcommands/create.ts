@@ -46,7 +46,7 @@ export const create: Command = {
         embeds: [
           {
             title: "game url",
-            url: `https://${ctx.env.WEB_URL}/game/${gameId}`,
+            // url: `https://${ctx.env.WEB_URL}/game/${gameId}`,
             color: 0xff0000,
           },
         ],

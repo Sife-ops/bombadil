@@ -9,7 +9,6 @@ import { Database } from "./Database";
 
 export function Api({ stack }: StackContext) {
   const table = use(Database);
-
   const botPublicKey = new Config.Secret(stack, "BOT_PUBLIC_KEY");
 
   const onboardQueue = new Queue(stack, "onboardQueue", {
