@@ -1,0 +1,17 @@
+{
+  "name": "@bombadil/services",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.252.0",
+    "aws-sdk": "^2.1296.0",
+    "electrodb": "^2.3.5",
+    "tweetnacl": "^1.0.3",
+    "ulid": "^2.3.0",
+    "zod": "^3.20.2"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.109"
+  }
+}
