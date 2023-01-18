@@ -7,7 +7,7 @@ import {
 import * as commands from "./commands";
 import AWS from "aws-sdk";
 import nacl from "tweetnacl";
-import { eventSchema, genericResponse } from "./common";
+import { genericResponse } from "./common";
 import { runner } from "@bombadil/bot/runner";
 import { Ctx } from "./ctx";
 import { Config } from "@serverless-stack/node/config";
@@ -21,16 +21,13 @@ export const handler: Handler<
   APIGatewayProxyResultV2
 > = async (event) => {
   try {
-    const parsedEvent = eventSchema.parse(event);
-    const body = JSON.parse(parsedEvent.body);
+    const body = JSON.parse(event.body!);
 
     switch (body.type) {
       case 1: {
         const verified = nacl.sign.detached.verify(
-          Buffer.from(
-            parsedEvent.headers["x-signature-ed25519"] + parsedEvent.body
-          ),
-          Buffer.from(parsedEvent.headers["x-signature-timestamp"], "hex"),
+          Buffer.from(event.headers["x-signature-timestamp"]! + event.body),
+          Buffer.from(event.headers["x-signature-ed25519"]!, "hex"),
           Buffer.from(Config.BOT_PUBLIC_KEY, "hex")
         );
 
@@ -39,7 +36,7 @@ export const handler: Handler<
         } else {
           return {
             statusCode: 200,
-            body: parsedEvent.body,
+            body: event.body,
           };
         }
       }
