@@ -37,12 +37,8 @@ export function Api({ stack }: StackContext) {
   const api = new ApiGateway(stack, "api", {
     defaults: {
       function: {
-        bind: [
-          table,
-          botPublicKey,
-          onboardQueue,
-          webSocketApi,
-        ],
+        bind: [table, botPublicKey, onboardQueue, webSocketApi],
+        permissions: ["execute-api"],
       },
     },
     routes: {
@@ -51,11 +47,6 @@ export function Api({ stack }: StackContext) {
           handler: "functions/game.handler",
         },
       },
-      // "POST /bot": {
-      //   function: {
-      //     handler: "functions/bot/main.handler",
-      //   },
-      // },
     },
   });
 

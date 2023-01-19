@@ -189,7 +189,7 @@ export const start: Command = {
     ]);
 
     // 6) message websocket clients
-    ctx.messageAll({ action: "update" });
+    await ctx.messageAll({ action: "update" });
 
     return genericResponse(`game started, <@${players[0].userId}>'s turn`);
   },

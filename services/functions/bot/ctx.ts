@@ -13,7 +13,7 @@ import {
 
 const sqs = new AWS.SQS();
 const wsApi = new AWS.ApiGatewayManagementApi({
-  endpoint: WebSocketApi.webSocketApi.url,
+  endpoint: WebSocketApi.webSocketApi.url.split("wss://")[1],
 });
 
 export class Ctx {
