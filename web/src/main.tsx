@@ -1,14 +1,6 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
-// import { Provider as UrqlProvider, createClient } from "urql";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-// import Home from "./pages/Home";
-// import Article from "./pages/Article";
-// import "./index.css";
-
-// const urql = createClient({
-//   url: import.meta.env.VITE_GRAPHQL_URL,
-// });
+import { Game } from "./pages/game";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   // <React.StrictMode>
@@ -22,11 +14,13 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<div>root</div>} />
-        {/* <Route path="/" element={<Home />} /> */}
-        {/* <Route path="article/:id" element={<Article />} /> */}
-        <Route path="*" element={<Navigate to="/" />} />
+        {/* <Route path="/dev" element={<Dev />} /> */}
+        <Route path="/game/:gameId" element={<Game />} />
+        <Route path="/error" element={<div>404</div>} />
+        <Route path="*" element={<Navigate to="/error" />} />
       </Routes>
     </BrowserRouter>
   );
 }
+
+export default App;

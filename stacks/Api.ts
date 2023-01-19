@@ -4,6 +4,7 @@ import {
   Api as ApiGateway,
   Config,
   Queue,
+  WebSocketApi,
 } from "@serverless-stack/resources";
 import { Database } from "./Database";
 
@@ -29,7 +30,7 @@ export function Api({ stack }: StackContext) {
     routes: {
       "POST /game": {
         function: {
-          handler: "functions/rest/game.handler",
+          handler: "functions/game.handler",
         },
       },
       "POST /bot": {
@@ -40,9 +41,26 @@ export function Api({ stack }: StackContext) {
     },
   });
 
-  stack.addOutputs({
-    API: api.url,
+  const webSocketApi = new WebSocketApi(stack, "webSocketApi", {
+    defaults: {
+      function: {
+        bind: [table],
+      },
+    },
+    routes: {
+      $connect: "functions/webSocket.connect",
+      $disconnect: "functions/webSocket.disconnect",
+      $default: "functions/webSocket.default_",
+    },
   });
 
-  return api;
+  stack.addOutputs({
+    API: api.url,
+    WS_API: webSocketApi.url,
+  });
+
+  return {
+    api,
+    webSocketApi,
+  };
 }

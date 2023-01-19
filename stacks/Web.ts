@@ -9,7 +9,8 @@ export function Web({ stack }: StackContext) {
     buildCommand: "npm run build",
     buildOutput: "dist",
     environment: {
-      VITE_API_URL: api.url,
+      VITE_API_URL: api.api.url,
+      VITE_WS_API_URL: api.webSocketApi.url,
     },
   });
 
