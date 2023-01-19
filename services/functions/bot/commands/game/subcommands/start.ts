@@ -2,7 +2,6 @@ import { Command } from "@bombadil/bot/runner";
 import { TerrainEntityType } from "@bombadil/core/entity";
 import { genericResponse, rollTwo } from "@bombadil/bot/common";
 import { model } from "@bombadil/core/model";
-import AWS from "aws-sdk";
 
 export const start: Command = {
   handler: async (ctx) => {
@@ -190,18 +189,7 @@ export const start: Command = {
     ]);
 
     // 6) message websocket clients
-
-    // await Promise.all(
-    //   ctx
-    //     .getGameCollection()
-    //     .ConnectionEntity.map(({ connectionId }) =>
-    //       sendMessageToClient(
-    //         "15hiut6zyb.execute-api.us-east-1.amazonaws.com/wgoettsch",
-    //         connectionId,
-    //         { action: "update" }
-    //       )
-    //     )
-    // );
+    ctx.messageAll({ action: "update" });
 
     return genericResponse(`game started, <@${players[0].userId}>'s turn`);
   },
@@ -219,27 +207,3 @@ const randomNoRepeat = <T>(array: T[]) => {
     return item;
   };
 };
-
-// todo: move this!!
-const sendMessageToClient = (url: string, connectionId: string, payload: any) =>
-  new Promise((resolve, reject) => {
-    const apigatewaymanagementapi = new AWS.ApiGatewayManagementApi({
-      endpoint: url,
-    });
-
-    apigatewaymanagementapi.postToConnection(
-      {
-        ConnectionId: connectionId,
-        Data: JSON.stringify(payload),
-      },
-
-      (err, data) => {
-        if (err) {
-          console.log("err is", err);
-          reject(err);
-        }
-
-        resolve(data);
-      }
-    );
-  });

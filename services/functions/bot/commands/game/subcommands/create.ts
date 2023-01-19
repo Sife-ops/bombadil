@@ -1,6 +1,8 @@
 import { Command } from "@bombadil/bot/runner";
 import { genericResponse } from "@bombadil/bot/common";
 import { model } from "@bombadil/core/model";
+import { StaticSite } from "@serverless-stack/node/site";
+import { Config } from "@serverless-stack/node/config";
 
 export const create: Command = {
   handler: async (ctx) => {
@@ -42,11 +44,15 @@ export const create: Command = {
     return {
       type: 4,
       data: {
-        content: `game created`,
+        content: "game created",
         embeds: [
           {
             title: "game url",
-            // url: `https://${ctx.env.WEB_URL}/game/${gameId}`,
+            url: `${
+              Config.STAGE.split("-").includes("local")
+                ? "http://localhost:3000"
+                : StaticSite.site.url
+            }/game/${gameId}`,
             color: 0xff0000,
           },
         ],

@@ -1,4 +1,6 @@
+import AWS from "aws-sdk";
 import { GameCollection, model } from "@bombadil/core/model";
+import { WebSocketApi } from "@serverless-stack/node/api";
 
 import {
   adjXY,
@@ -6,24 +8,29 @@ import {
   compareXYPair,
   Coords,
   CoordsPair,
-  envSchema,
   OptionSchema,
 } from "./common";
 
+const sqs = new AWS.SQS();
+const wsApi = new AWS.ApiGatewayManagementApi({
+  endpoint: WebSocketApi.webSocketApi.url,
+});
+
 export class Ctx {
   body;
-
-  // env;
   gameCollection;
+  service;
 
   private constructor(c: {
     body: any;
     gameCollection: GameCollection | undefined;
   }) {
     this.body = c.body;
-
-    // this.env = envSchema.parse(process.env);
     this.gameCollection = c.gameCollection;
+    this.service = {
+      sqs,
+      wsApi,
+    };
   }
 
   static async init(body: any) {
@@ -200,5 +207,34 @@ export class Ctx {
 
   hasBuilding(b: Coords) {
     return !!this.getBuildings().find((building) => compareXY(building, b));
+  }
+
+  // websocket
+  messageClient(connectionId: string, message: any) {
+    return new Promise((resolve, reject) => {
+      this.service.wsApi.postToConnection(
+        {
+          ConnectionId: connectionId,
+          Data: JSON.stringify(message),
+        },
+
+        (err, data) => {
+          if (err) {
+            console.log("err is", err);
+            reject(err);
+          }
+
+          resolve(data);
+        }
+      );
+    });
+  }
+
+  messageAll(message: any) {
+    return Promise.all(
+      this.getGameCollection().ConnectionEntity.map(({ connectionId }) =>
+        this.messageClient(connectionId, message)
+      )
+    );
   }
 }

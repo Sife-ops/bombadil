@@ -5,7 +5,6 @@ import {
 } from "aws-lambda";
 
 import * as commands from "./commands";
-import AWS from "aws-sdk";
 import nacl from "tweetnacl";
 import { genericResponse } from "./common";
 import { runner } from "@bombadil/bot/runner";
@@ -14,7 +13,7 @@ import { Config } from "@serverless-stack/node/config";
 import { Queue } from "@serverless-stack/node/queue";
 
 // todo: add to ctx?
-const sqs = new AWS.SQS();
+// const sqs = new AWS.SQS();
 
 export const handler: Handler<
   APIGatewayProxyEventV2,
@@ -62,7 +61,7 @@ export const handler: Handler<
 
         const [run] = await Promise.all([
           runner(commands, commandName, ctx),
-          sqs
+          ctx.service.sqs
             .sendMessage({
               QueueUrl: Queue.onboardQueue.queueUrl,
               MessageBody: JSON.stringify(body.member.user),

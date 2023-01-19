@@ -4,13 +4,10 @@ import {
   usersSchema,
 } from "@bombadil/bot/common";
 
-import AWS from "aws-sdk";
 import { Command } from "@bombadil/bot/runner";
 import { Queue } from "@serverless-stack/node/queue";
 import { model } from "@bombadil/core/model";
 import { z } from "zod";
-
-const sqs = new AWS.SQS();
 
 const schema = z.object({
   data: z.object({
@@ -38,7 +35,7 @@ export const add: Command = {
     }
 
     await Promise.all([
-      sqs
+      ctx.service.sqs
         .sendMessage({
           QueueUrl: Queue.onboardQueue.queueUrl,
           MessageBody: JSON.stringify(

@@ -21,26 +21,6 @@ export function Api({ stack }: StackContext) {
     },
   });
 
-  const api = new ApiGateway(stack, "api", {
-    defaults: {
-      function: {
-        bind: [table, botPublicKey, onboardQueue],
-      },
-    },
-    routes: {
-      "POST /game": {
-        function: {
-          handler: "functions/game.handler",
-        },
-      },
-      "POST /bot": {
-        function: {
-          handler: "functions/bot/main.handler",
-        },
-      },
-    },
-  });
-
   const webSocketApi = new WebSocketApi(stack, "webSocketApi", {
     defaults: {
       function: {
@@ -51,6 +31,31 @@ export function Api({ stack }: StackContext) {
       $connect: "functions/webSocket.connect",
       $disconnect: "functions/webSocket.disconnect",
       $default: "functions/webSocket.default_",
+    },
+  });
+
+  const api = new ApiGateway(stack, "api", {
+    defaults: {
+      function: {
+        bind: [
+          table,
+          botPublicKey,
+          onboardQueue,
+          webSocketApi,
+        ],
+      },
+    },
+    routes: {
+      "POST /game": {
+        function: {
+          handler: "functions/game.handler",
+        },
+      },
+      // "POST /bot": {
+      //   function: {
+      //     handler: "functions/bot/main.handler",
+      //   },
+      // },
     },
   });
 

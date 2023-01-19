@@ -14,6 +14,15 @@ export function Web({ stack }: StackContext) {
     },
   });
 
+  api.api.addRoutes(stack, {
+    "POST /bot": {
+      function: {
+        bind: [site],
+        handler: "functions/bot/main.handler",
+      },
+    },
+  });
+
   stack.addOutputs({
     SITE: site.url,
   });
