@@ -5,12 +5,13 @@ export const Game = () => {
 
   return (
     <div>
-      <div>{game.gameId}</div>
+      {/* <div>{game.gameId}</div> */}
       <div>
         <svg
-          viewBox="0 0 120 150"
+          viewBox="0 0 120 130"
           style={{
             width: "600px",
+            // height: "600px"
           }}
         >
           <g transform="translate(10, 10)">
@@ -19,6 +20,10 @@ export const Game = () => {
             {game.harbors}
           </g>
         </svg>
+      </div>
+      <div>
+        <div>players:</div>
+        {game.players}
       </div>
     </div>
   );

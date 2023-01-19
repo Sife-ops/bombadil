@@ -19,6 +19,7 @@ export const useGame = () => {
   const [hexes, setHexes] = useState<JSX.Element[]>();
   const [chits, setChits] = useState<JSX.Element[]>();
   const [harbors, setHarbors] = useState<JSX.Element[]>();
+  const [players, setPlayers] = useState<JSX.Element[]>();
 
   const updateGameData = () => {
     fetch(import.meta.env.VITE_API_URL + "/game", {
@@ -102,7 +103,10 @@ export const useGame = () => {
       ]);
 
       setChits(gameData.gameCollection.ChitEntity.map(mapChit));
-      setHarbors(gameData.gameCollection.HarborEntity.map(mapHarbor));
+      setHarbors(gameData.gameCollection.HarborEntity.map(mapHarbors));
+      setPlayers(
+        gameData.gameCollection.PlayerEntity.map(mapPlayers(gameData.users))
+      );
     }
   }, [gameData]);
 
@@ -114,6 +118,7 @@ export const useGame = () => {
     hexes,
     chits,
     harbors,
+    players,
   };
 };
 
@@ -134,7 +139,24 @@ const translate = (c: Coords) => {
   };
 };
 
-const mapHarbor = (e: Entity.HarborEntityType) => {
+const mapPlayers = (users: Entity.UserEntityType[]) => {
+  return (player: Entity.PlayerEntityType) => {
+    const playerUser = {
+      ...player,
+      user: users.find((u) => u.userId === player.userId)!,
+    };
+    console.log(playerUser);
+    return (
+      <div key={player.playerId}>
+        <div>
+          {playerUser.user.username}#{playerUser.user.discriminator}
+        </div>
+      </div>
+    );
+  };
+};
+
+const mapHarbors = (e: Entity.HarborEntityType) => {
   const { x, y } = translate(e);
   return (
     <g transform={`translate(${x}, ${y})`} key={`x${x}y${y}`}>

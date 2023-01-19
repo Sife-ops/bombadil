@@ -28,7 +28,9 @@ export const handler: Handler<
       gameCollection.PlayerEntity.map((player) =>
         model.entities.UserEntity.get({
           userId: player.userId,
-        }).go()
+        })
+          .go()
+          .then((e) => e.data)
       )
     );
 

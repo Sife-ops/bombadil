@@ -69,6 +69,8 @@ export const handler: Handler<
             .promise(),
         ]);
 
+        ctx.hasGame() && ctx.messageAll({ action: "update" });
+
         return run;
       }
 

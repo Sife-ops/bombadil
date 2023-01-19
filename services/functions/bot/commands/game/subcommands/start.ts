@@ -18,7 +18,6 @@ export const start: Command = {
      * 3) create entities
      * 4) player order
      * 5) start game
-     * 6) message websocket clients
      */
 
     // todo: robber
@@ -187,9 +186,6 @@ export const start: Command = {
         .set({ started: true })
         .go(),
     ]);
-
-    // 6) message websocket clients
-    await ctx.messageAll({ action: "update" });
 
     return genericResponse(`game started, <@${players[0].userId}>'s turn`);
   },
