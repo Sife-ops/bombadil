@@ -79,10 +79,9 @@ export const useGame = () => {
 
   useEffect(() => {
     if (gameData) {
-      const map = JSON.parse(gameData.gameCollection.GameEntity[0].map) as {
-        type: string;
-      }[][];
+      const g = gameData.gameCollection;
 
+      const map = JSON.parse(g.GameEntity[0].map) as any[][];
       const flatMap = map
         .map((row, iRow) =>
           row.map((col, iCol) => ({
@@ -93,32 +92,26 @@ export const useGame = () => {
         )
         .reduce((a, c) => {
           return [...a, ...c];
-        }, []);
+        }, [])
+        .filter((e) => ["ocean", "harbor"].includes(e.type));
 
-      setHexes([
-        ...flatMap
-          .filter((e) => ["ocean", "harbor"].includes(e.type))
-          .map(mapHex),
-        ...gameData.gameCollection.TerrainEntity.map(mapHex),
-      ]);
-
-      setChits(gameData.gameCollection.ChitEntity.map(mapChit));
-      setHarbors(gameData.gameCollection.HarborEntity.map(mapHarbors));
-      setPlayers(
-        gameData.gameCollection.PlayerEntity.map(mapPlayers(gameData.users))
-      );
+      setHexes([...flatMap, ...g.TerrainEntity].map(translate).map(mapHexes));
+      setChits(g.ChitEntity.map(translate).map(mapChits));
+      setHarbors(g.HarborEntity.map(translate).map(mapHarbors));
+      setPlayers(g.PlayerEntity.map(mapPlayers(gameData.users)));
     }
   }, [gameData]);
 
   return {
-    clientId,
-    gameId,
-    ws,
-    gameData,
     hexes,
     chits,
     harbors,
     players,
+
+    clientId,
+    gameId,
+    ws,
+    gameData,
   };
 };
 
@@ -127,17 +120,48 @@ interface Coords {
   y: number;
 }
 
-const translate = (c: Coords) => {
+function translate<T extends Coords>(c: T) {
   let x = c.x * 10;
   if (c.y % 2 !== 0) {
     x = x + 5;
   }
-
   return {
+    ...c,
     x,
     y: c.y * 9,
   };
-};
+}
+
+const mapHexes = ({ x, y, terrain }: Entity.TerrainEntityType) => (
+  <g transform={`translate(${x}, ${y})`} key={`x${x}y${y}`}>
+    <polygon
+      stroke="#000000"
+      strokeWidth="0.5"
+      style={{ fill: resourceColor(terrain) }}
+      points="5,-9 -5,-9 -10,0 -5,9 5,9 10,0"
+    />
+  </g>
+);
+
+const mapChits = ({ x, y, value }: Entity.ChitEntityType) => (
+  <g transform={`translate(${x}, ${y})`} key={`x${x}y${y}`}>
+    <circle cx={0} cy={0} r={3} style={{ fill: "black" }} />
+    <text fill="white" fontSize={4} x={-1} y={1}>
+      {value}
+    </text>
+  </g>
+);
+
+const mapHarbors = ({ x, y, resource }: Entity.HarborEntityType) => (
+  <g transform={`translate(${x}, ${y})`} key={`x${x}y${y}`}>
+    <polygon
+      stroke="#000000"
+      strokeWidth="0.5"
+      style={{ fill: resourceColor(resource) }}
+      points="4,-4 -4,-4 -4,4 4,4"
+    />
+  </g>
+);
 
 const mapPlayers = (users: Entity.UserEntityType[]) => {
   return (player: Entity.PlayerEntityType) => {
@@ -145,7 +169,6 @@ const mapPlayers = (users: Entity.UserEntityType[]) => {
       ...player,
       user: users.find((u) => u.userId === player.userId)!,
     };
-    console.log(playerUser);
     return (
       <div key={player.playerId}>
         <div>
@@ -154,46 +177,6 @@ const mapPlayers = (users: Entity.UserEntityType[]) => {
       </div>
     );
   };
-};
-
-const mapHarbors = (e: Entity.HarborEntityType) => {
-  const { x, y } = translate(e);
-  return (
-    <g transform={`translate(${x}, ${y})`} key={`x${x}y${y}`}>
-      <polygon
-        stroke="#000000"
-        strokeWidth="0.5"
-        style={{ fill: resourceColor(e.resource) }}
-        points="4,-4 -4,-4 -4,4 4,4"
-      />
-    </g>
-  );
-};
-
-const mapChit = (e: Entity.ChitEntityType) => {
-  const { x, y } = translate(e);
-  return (
-    <g transform={`translate(${x}, ${y})`} key={`x${x}y${y}`}>
-      <circle cx={0} cy={0} r={3} style={{ fill: "black" }} />
-      <text fill="white" fontSize={4} x={-1} y={1}>
-        {e.value}
-      </text>
-    </g>
-  );
-};
-
-const mapHex = (e: { x: number; y: number; terrain?: string }) => {
-  const { x, y } = translate(e);
-  return (
-    <g transform={`translate(${x}, ${y})`} key={`x${x}y${y}`}>
-      <polygon
-        stroke="#000000"
-        strokeWidth="0.5"
-        style={{ fill: resourceColor(e.terrain) }}
-        points="5,-9 -5,-9 -10,0 -5,9 5,9 10,0"
-      />
-    </g>
-  );
 };
 
 const resourceColor = (t?: string) => {

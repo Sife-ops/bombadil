@@ -5,7 +5,6 @@ export const Game = () => {
 
   return (
     <div>
-      {/* <div>{game.gameId}</div> */}
       <div>
         <svg
           viewBox="0 0 120 130"
