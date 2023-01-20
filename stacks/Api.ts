@@ -15,7 +15,7 @@ export function Api({ stack }: StackContext) {
   const onboardQueue = new Queue(stack, "onboardQueue", {
     consumer: {
       function: {
-        handler: "functions/onboardQueue.handler",
+        handler: "functions/onboardConsumer.handler",
         bind: [table],
       },
     },
@@ -50,6 +50,16 @@ export function Api({ stack }: StackContext) {
     },
   });
 
+  const botQueue = new Queue(stack, "botQueue", {
+    consumer: {
+      function: {
+        bind: [table, onboardQueue, webSocketApi],
+        environment: { HANDLER_TYPE: "consumer" },
+        handler: "functions/bot/consumer.handler",
+      },
+    },
+  });
+
   stack.addOutputs({
     API: api.url,
     WS_API: webSocketApi.url,
@@ -58,5 +68,7 @@ export function Api({ stack }: StackContext) {
   return {
     api,
     webSocketApi,
+    onboardQueue,
+    botQueue,
   };
 }

@@ -1,10 +1,15 @@
-import { compareXY, Coords, genericResponse } from "@bombadil/bot/common";
-import { CommandHandler } from "@bombadil/bot/runner";
+import { Ctx } from "@bombadil/bot/ctx";
 import { model } from "@bombadil/core/model";
 
+import {
+  compareXY,
+  Coords,
+  genericResponse,
+  runnerResponse,
+} from "@bombadil/bot/common";
+
 export const building =
-  (building: "settlement" | "city"): CommandHandler =>
-  async (ctx) => {
+  (ctx: Ctx, building: "settlement" | "city") => async () => {
     const coords = ctx.getMapIndexOrThrow<Coords>(
       "intersection",
       (ctx.getOptionValue("ind") as number) - 1 // todo: 0 start index doesn't work
@@ -32,15 +37,18 @@ export const building =
       // building already exists
       ctx.hasBuilding(coords)
     ) {
-      return genericResponse("illegal move");
+      return runnerResponse("illegal move");
     }
 
-    await model.entities.BuildingEntity.create({
-      ...coords,
-      building,
-      gameId: ctx.getGame().gameId,
-      playerId: ctx.getUserId(),
-    }).go();
-
-    return genericResponse(`place ${building}`);
+    return {
+      mutations: [
+        model.entities.BuildingEntity.create({
+          ...coords,
+          building,
+          gameId: ctx.getGame().gameId,
+          playerId: ctx.getUserId(),
+        }).go(),
+      ],
+      response: genericResponse(`place ${building}`),
+    };
   };

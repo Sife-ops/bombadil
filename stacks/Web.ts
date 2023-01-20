@@ -17,7 +17,8 @@ export function Web({ stack }: StackContext) {
   api.api.addRoutes(stack, {
     "POST /bot": {
       function: {
-        bind: [site],
+        bind: [site, api.onboardQueue, api.botQueue],
+        environment: { HANDLER_TYPE: "bot" },
         handler: "functions/bot/main.handler",
       },
     },

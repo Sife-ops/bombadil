@@ -1,6 +1,11 @@
 import { Command } from "@bombadil/bot/runner";
 import { building } from "./building";
 
-export const city: Command = {
-  handler: building("city"),
+export const stlmnt: Command = {
+  handler: async (ctx) => ({
+    bot: building(ctx, "city"),
+    consumer: async () => {
+      return;
+    },
+  }),
 };

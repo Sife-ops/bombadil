@@ -1,5 +1,18 @@
 import { z } from "zod";
 
+export const randomNoRepeat = <T>(array: T[]) => {
+  let copy = array.slice(0);
+  return () => {
+    if (copy.length < 1) {
+      copy = array.slice(0);
+    }
+    let index = Math.floor(Math.random() * copy.length);
+    let item = copy[index];
+    copy.splice(index, 1);
+    return item;
+  };
+};
+
 export interface Coords {
   x: number;
   y: number;
@@ -122,6 +135,13 @@ export const genericResponse = (content: string) => {
     data: {
       content,
     },
+  };
+};
+
+export const runnerResponse = (content: string) => {
+  return {
+    mutations: [],
+    response: genericResponse(content),
   };
 };
 

@@ -1,62 +1,70 @@
 import { Command } from "@bombadil/bot/runner";
-import { genericResponse } from "@bombadil/bot/common";
-import { model } from "@bombadil/core/model";
-import { StaticSite } from "@serverless-stack/node/site";
 import { Config } from "@serverless-stack/node/config";
+import { StaticSite } from "@serverless-stack/node/site";
+import { model } from "@bombadil/core/model";
+import { runnerResponse } from "@bombadil/bot/common";
 
 export const create: Command = {
-  handler: async (ctx) => {
-    const userId = ctx.getUserId();
-    const channelId = ctx.getChannelId();
+  handler: async (ctx) => ({
+    bot: async () => {
+      const userId = ctx.getUserId();
+      const channelId = ctx.getChannelId();
 
-    /**
-     * 1) one game per channel
-     * 2) map must exist
-     * 3) create game
-     */
+      /**
+       * 1) one game per channel
+       * 2) map must exist
+       * 3) create game
+       */
 
-    // 1) one game per channel
-    if (ctx.hasGame()) {
-      return genericResponse("game already exists");
-    }
+      // 1) one game per channel
+      if (ctx.hasGame()) {
+        return runnerResponse("game already exists");
+      }
 
-    // 2) map must exist
-    const map = await model.entities.MapEntity.query
-      .map({ mapId: ctx.getOptionValue("map") as string })
-      .go()
-      .then(({ data }) => data[0]?.data);
+      // 2) map must exist
+      const map = await model.entities.MapEntity.query
+        .map({ mapId: ctx.getOptionValue("map") as string })
+        .go()
+        .then(({ data }) => data[0]?.data);
 
-    if (!map) {
-      return genericResponse("map does not exist");
-    }
+      if (!map) {
+        return runnerResponse("map does not exist");
+      }
 
-    // 3) create game
-    const gameId = await model.entities.GameEntity.create({
-      channelId,
-      map,
-      userId,
-    })
-      .go()
-      .then(({ data }) => data.gameId);
+      // 3) create game
+      const gameId = await model.entities.GameEntity.create({
+        channelId,
+        map,
+        userId,
+      })
+        .go()
+        .then(({ data }) => data.gameId);
 
-    await model.entities.PlayerEntity.create({ gameId, userId }).go();
-
-    return {
-      type: 4,
-      data: {
-        content: "game created",
-        embeds: [
-          {
-            title: "game url",
-            url: `${
-              Config.STAGE.split("-").includes("local")
-                ? "http://localhost:3000"
-                : StaticSite.site.url
-            }/game/${gameId}`,
-            color: 0xff0000,
-          },
+      return {
+        mutations: [
+          model.entities.PlayerEntity.create({ gameId, userId }).go(),
         ],
-      },
-    };
-  },
+        response: {
+          type: 4,
+          data: {
+            content: "game created",
+            embeds: [
+              {
+                title: "game url",
+                url: `${
+                  Config.STAGE.split("-").includes("local")
+                    ? "http://localhost:3000"
+                    : StaticSite.site.url
+                }/game/${gameId}`,
+                color: 0xff0000,
+              },
+            ],
+          },
+        },
+      };
+    },
+    consumer: async () => {
+      return;
+    },
+  }),
 };

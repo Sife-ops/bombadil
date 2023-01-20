@@ -10,6 +10,7 @@ import {
   CoordsPair,
   OptionSchema,
 } from "./common";
+import { Queue } from "@serverless-stack/node/queue";
 
 const sqs = new AWS.SQS();
 const wsApi = new AWS.ApiGatewayManagementApi({
@@ -19,6 +20,7 @@ const wsApi = new AWS.ApiGatewayManagementApi({
 export class Ctx {
   body;
   gameCollection;
+  handlerType;
   service;
 
   private constructor(c: {
@@ -27,6 +29,7 @@ export class Ctx {
   }) {
     this.body = c.body;
     this.gameCollection = c.gameCollection;
+    this.handlerType = process.env.HANDLER_TYPE as "bot" | "consumer";
     this.service = {
       sqs,
       wsApi,
@@ -58,8 +61,12 @@ export class Ctx {
     return this.body.channel_id;
   }
 
+  getUser() {
+    return this.body.member.user;
+  }
+
   getUserId(): string {
-    return this.body.member.user.id;
+    return this.getUser().id;
   }
 
   // options
@@ -177,6 +184,10 @@ export class Ctx {
     return player;
   }
 
+  getResolvedUsers() {
+    return this.body.data.resolved.users;
+  }
+
   // road
   getRoads() {
     return this.getGameCollection().RoadEntity.map((road) => ({
@@ -230,11 +241,51 @@ export class Ctx {
     });
   }
 
-  messageAll(message: any) {
-    return Promise.all(
-      this.getGameCollection().ConnectionEntity.map(({ connectionId }) =>
-        this.messageClient(connectionId, message)
-      )
+  allMessages(message: any) {
+    return this.getGameCollection().ConnectionEntity.map(({ connectionId }) =>
+      this.messageClient(connectionId, message)
     );
+  }
+
+  messageAll(message: any) {
+    return Promise.all(this.allMessages(message));
+  }
+
+  // queue
+  enqueueBot() {
+    return this.service.sqs
+      .sendMessage({
+        QueueUrl: Queue.botQueue.queueUrl,
+        MessageBody: JSON.stringify(this.body),
+      })
+      .promise();
+  }
+
+  enqueueOnboardUser(user: any) {
+    return this.service.sqs
+      .sendMessage({
+        QueueUrl: Queue.onboardQueue.queueUrl,
+        MessageBody: JSON.stringify(user),
+      })
+      .promise();
+  }
+
+  enqueueMember() {
+    return this.enqueueOnboardUser(this.getUser());
+  }
+
+  enqueueResolved() {
+    try {
+      const resolved = this.getResolvedUsers();
+      return Object.keys(resolved)
+        .map((key) => resolved[key])
+        .map((user) => this.enqueueOnboardUser(user));
+    } catch {
+      return [];
+    }
+  }
+
+  enqueueUsers() {
+    return [this.enqueueMember(), ...this.enqueueResolved()];
   }
 }

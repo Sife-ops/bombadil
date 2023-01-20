@@ -1,30 +1,32 @@
 import { Command } from "@bombadil/bot/runner";
-import { genericResponse } from "@bombadil/bot/common";
+import { genericResponse, runnerResponse } from "@bombadil/bot/common";
 import { model } from "@bombadil/core/model";
 
 export const remove: Command = {
-  handler: async (ctx) => {
-    const userId = ctx.getOptionValue("player") as string;
+  handler: async (ctx) => ({
+    bot: async () => {
+      const userId = ctx.getOptionValue("player") as string;
 
-    if (userId === ctx.getUserId()) {
-      return genericResponse("cannot remove organizer");
-    }
+      if (userId === ctx.getUserId()) {
+        return runnerResponse("cannot remove organizer");
+      }
 
-    // todo: refer to ctx.gameCollection
-    const playerId = await model.entities.PlayerEntity.query
-      .game_({
-        gameId: ctx.getGame().gameId,
-        userId,
-      })
-      .go()
-      .then(({ data }) => data[0]?.playerId);
+      const player = ctx.getPlayers().find((e) => e.userId === userId);
+      if (!player) {
+        return runnerResponse("player does not exist");
+      }
 
-    if (!playerId) {
-      return genericResponse("player does not exist");
-    }
-
-    await model.entities.PlayerEntity.remove({ playerId }).go();
-
-    return genericResponse("removed player");
-  },
+      return {
+        mutations: [
+          model.entities.PlayerEntity.remove({
+            playerId: player.playerId,
+          }).go(),
+        ],
+        response: genericResponse("removed player"),
+      };
+    },
+    consumer: async () => {
+      return;
+    },
+  }),
 };

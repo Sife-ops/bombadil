@@ -1,7 +1,15 @@
 import { Ctx } from "./ctx";
 import { z } from "zod";
 
-export type CommandHandler = (ctx: Ctx) => Promise<any>;
+type CommandResult = {
+  mutations: Array<Promise<any>>;
+  response: Record<string, any>;
+} | void;
+
+export type CommandHandler = (ctx: Ctx) => Promise<{
+  bot: () => Promise<CommandResult>;
+  consumer: () => Promise<CommandResult>;
+}>;
 
 export interface Command {
   schema?: z.AnyZodObject | undefined;
@@ -19,5 +27,6 @@ export const runner = async (
     command.schema.parse(ctx.body);
   }
 
-  return command.handler(ctx);
+  const h = await command.handler(ctx);
+  return h[ctx.handlerType]();
 };
