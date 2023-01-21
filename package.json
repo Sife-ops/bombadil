@@ -25,6 +25,7 @@
   "workspaces": [
     "services",
     "cli",
+    "lib",
     "web"
   ]
 }

@@ -2,7 +2,7 @@ import * as Entity from "@bombadil/services/core/entity";
 import Sockette from "sockette";
 import _ from "lodash";
 import { GameCollection } from "@bombadil/services/core/model";
-import { adjXY, compareXY } from "@bombadil/services/functions/bot/lib";
+import { adjXY, compareXY } from "@bombadil/lib";
 import { ulid } from "ulid";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";

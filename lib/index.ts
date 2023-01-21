@@ -1,6 +1,7 @@
-// TODO: MOVE THIS
-
-import { Coords } from "./common";
+export interface Coords {
+  x: number;
+  y: number;
+}
 
 export interface CoordsPair {
   from: Coords;

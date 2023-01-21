@@ -1,14 +1,16 @@
 import AWS from "aws-sdk";
-import { Queue } from "@serverless-stack/node/queue";
 import { GameCollection, model } from "@bombadil/core/model";
+import { Queue } from "@serverless-stack/node/queue";
 import { WebSocketApi } from "@serverless-stack/node/api";
+import { onboardUser, OptionSchema } from "./common";
 
 import {
   Coords,
-  onboardUser,
-  OptionSchema,
-} from "./common";
-import { adjXY, compareXY, compareXYPair, CoordsPair } from "./lib";
+  CoordsPair,
+  adjXY,
+  compareXY,
+  compareXYPair,
+} from "@bombadil/lib";
 
 const sqs = new AWS.SQS();
 const wsApi = new AWS.ApiGatewayManagementApi({
