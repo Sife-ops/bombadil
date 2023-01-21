@@ -1,6 +1,8 @@
 import * as Entity from "@bombadil/services/core/entity";
 import Sockette from "sockette";
+import _ from "lodash";
 import { GameCollection } from "@bombadil/services/core/model";
+import { adjXY, compareXY } from "@bombadil/services/functions/bot/lib";
 import { ulid } from "ulid";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -19,6 +21,7 @@ export const useGame = () => {
   const [hexes, setHexes] = useState<JSX.Element[]>();
   const [chits, setChits] = useState<JSX.Element[]>();
   const [harbors, setHarbors] = useState<JSX.Element[]>();
+  const [jetties, setJetties] = useState<JSX.Element[]>();
   const [players, setPlayers] = useState<JSX.Element[]>();
 
   const updateGameData = () => {
@@ -91,12 +94,19 @@ export const useGame = () => {
         )
         .reduce((a, c) => {
           return [...a, ...c];
-        }, [])
-        .filter((e) => ["ocean", "harbor"].includes(e.type));
-      console.log(flatMap);
-      setHexes([...flatMap, ...g.TerrainEntity].map(translate).map(mapHexes));
+        }, []);
+
+      setHexes(
+        [
+          ...flatMap.filter((e) => ["ocean", "harbor"].includes(e.type)),
+          ...g.TerrainEntity,
+        ]
+          .map(translate)
+          .map(mapHexes)
+      );
       setChits(g.ChitEntity.map(translate).map(mapChits));
       setHarbors(g.HarborEntity.map(translate).map(mapHarbors));
+      setJetties(flatMap.filter((e) => _.has(e, "harbor")).map(mapJetties));
       setPlayers(g.PlayerEntity.map(mapPlayers(gameData.users)));
     }
   }, [gameData]);
@@ -105,6 +115,7 @@ export const useGame = () => {
     hexes,
     chits,
     harbors,
+    jetties,
     players,
 
     clientId,
@@ -162,8 +173,43 @@ const mapHarbors = ({ x, y, resource }: Entity.HarborEntityType) => (
   </g>
 );
 
+const mapJetties = ({ x, y, harbor }: Coords & { harbor: Coords }) => {
+  const h = translate(harbor);
+
+  const corner = [
+    { x: 5, y: -9 },
+    { x: 10, y: 0 },
+    { x: 5, y: 9 },
+    { x: -5, y: 9 },
+    { x: -10, y: 0 },
+    { x: -5, y: -9 },
+  ][
+    adjXY(harbor)
+      .map((offset) => ({
+        x: harbor.x + offset.x,
+        y: harbor.y + offset.y,
+      }))
+      .findIndex((i) => compareXY(i, { x, y }))
+  ];
+
+  return (
+    <g transform={`translate(${h.x}, ${h.y})`} key={`x${x}y${y}`}>
+      <line
+        x1={0}
+        y1={0}
+        x2={corner.x}
+        y2={corner.y}
+        strokeWidth="0.5"
+        style={{
+          stroke: "#000000",
+        }}
+      />
+    </g>
+  );
+};
+
 const mapPlayers = (users: Entity.UserEntityType[]) => {
-  console.log(users)
+  console.log(users);
   return (player: Entity.PlayerEntityType) => {
     // console.log(player)
     // const playerUser = {

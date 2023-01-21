@@ -2,25 +2,25 @@ import { Command } from "@bombadil/bot/runner";
 import { model } from "@bombadil/core/model";
 
 import {
-  compareXY,
   Coords,
   genericResponse,
   genericResult,
 } from "@bombadil/bot/common";
+import { compareXY } from "@bombadil/bot/lib";
 
 export const road: Command = {
   handler: async (ctx) => {
+    const from = ctx.getMapIndexOrThrow<Coords>(
+      "intersection",
+      (ctx.getOptionValue("ind1") as number) - 1
+    );
+    const to = ctx.getMapIndexOrThrow<Coords>(
+      "intersection",
+      (ctx.getOptionValue("ind2") as number) - 1
+    );
+
     return {
       bot: async () => {
-        const from = ctx.getMapIndexOrThrow<Coords>(
-          "intersection",
-          (ctx.getOptionValue("ind1") as number) - 1
-        );
-        const to = ctx.getMapIndexOrThrow<Coords>(
-          "intersection",
-          (ctx.getOptionValue("ind2") as number) - 1
-        );
-
         if (
           // exceeds first-two-round limit
           (ctx.getRound() < 2 &&
@@ -46,6 +46,12 @@ export const road: Command = {
         }
 
         return {
+          mutations: [ctx.enqueueBot()],
+          response: genericResponse("place road"),
+        };
+      },
+      consumer: async () => {
+        return {
           mutations: [
             model.entities.RoadEntity.create({
               x1: from.x,
@@ -56,11 +62,8 @@ export const road: Command = {
               playerId: ctx.getUserId(),
             }).go(),
           ],
-          response: genericResponse("place road"),
+          response: {},
         };
-      },
-      consumer: async () => {
-        return;
       },
     };
   },

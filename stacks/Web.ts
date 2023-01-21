@@ -19,7 +19,7 @@ export function Web({ stack }: StackContext) {
       function: {
         bind: [site, api.botQueue],
         environment: { HANDLER_TYPE: "bot" },
-        handler: "functions/bot/main.handler",
+        handler: "functions/bot/main.bot",
       },
     },
   });

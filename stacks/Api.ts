@@ -47,7 +47,7 @@ export function Api({ stack }: StackContext) {
         bind: [table, webSocketApi],
         environment: { HANDLER_TYPE: "consumer" },
         permissions: ["execute-api"],
-        handler: "functions/bot/consumer.handler",
+        handler: "functions/bot/main.consumer",
       },
     },
   });

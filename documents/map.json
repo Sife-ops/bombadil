@@ -1,0 +1,502 @@
+[
+  [
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "harbor"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    }
+  ],
+
+  [
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "ocean"
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 5,
+        "y": 0
+      }
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 5,
+        "y": 0
+      }
+    },
+    {
+      "type": "ocean"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    }
+  ],
+
+  [
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "harbor"
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 8,
+        "y": 2
+      }
+    },
+    {
+      "type": "harbor"
+    },
+    {
+      "type": "none"
+    }
+  ],
+
+  [
+    {
+      "type": "ocean"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 8,
+        "y": 2
+      }
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "ocean"
+    }
+  ],
+
+  [
+    {
+      "type": "none"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection"
+    }
+  ],
+
+  [
+    {
+      "type": "harbor"
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 0,
+        "y": 5
+      }
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 9,
+        "y": 5
+      }
+    },
+    {
+      "type": "harbor"
+    }
+  ],
+
+  [
+    {
+      "type": "none"
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 0,
+        "y": 5
+      }
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 9,
+        "y": 5
+      }
+    }
+  ],
+
+  [
+    {
+      "type": "ocean"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "ocean"
+    }
+  ],
+
+  [
+    {
+      "type": "none"
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 0,
+        "y": 9
+      }
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 9,
+        "y": 9
+      }
+    }
+  ],
+
+  [
+    {
+      "type": "harbor"
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 0,
+        "y": 9
+      }
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 9,
+        "y": 9
+      }
+    },
+    {
+      "type": "harbor"
+    }
+  ],
+
+  [
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "ocean"
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 3,
+        "y": 11
+      }
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 3,
+        "y": 11
+      }
+    },
+    {
+      "type": "terrain"
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 6,
+        "y": 11
+      }
+    },
+    {
+      "type": "intersection",
+      "harbor": {
+        "x": 6,
+        "y": 11
+      }
+    },
+    {
+      "type": "ocean"
+    },
+    {
+      "type": "none"
+    }
+  ],
+
+  [
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "harbor"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "intersection"
+    },
+    {
+      "type": "harbor"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    }
+  ],
+
+  [
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "ocean"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    },
+    {
+      "type": "none"
+    }
+  ]
+]

@@ -16,6 +16,7 @@ export const Game = () => {
           <g transform="translate(10, 10)">
             {game.hexes}
             {game.chits}
+            {game.jetties}
             {game.harbors}
           </g>
         </svg>

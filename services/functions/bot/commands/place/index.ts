@@ -16,7 +16,7 @@ export const place: Command = {
         return runner(subcommands, ctx.getCommandName(1), ctx);
       },
       consumer: async () => {
-        return;
+        return runner(subcommands, ctx.getCommandName(1), ctx);
       },
     };
   },

@@ -11,7 +11,7 @@ import { Ctx } from "./ctx";
 import { genericResponse } from "./common";
 import { runner } from "@bombadil/bot/runner";
 
-export const handler: Handler<
+export const bot: Handler<
   APIGatewayProxyEventV2,
   APIGatewayProxyResultV2
 > = async (event) => {
@@ -72,5 +72,18 @@ export const handler: Handler<
     return {
       statusCode: 401,
     };
+  }
+};
+
+export const consumer = async (event: any) => {
+  try {
+    const ctx = await Ctx.init(JSON.parse(event.Records[0].body));
+    const result = await runner(commands, ctx.getCommandName(0), ctx);
+
+    await Promise.all([...(result ? result.mutations : [])]);
+    await Promise.all(ctx.allMessages({ action: "update" }));
+  } catch (e) {
+    console.log(e);
+    return;
   }
 };
