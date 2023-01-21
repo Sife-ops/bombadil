@@ -12,15 +12,6 @@ export function Api({ stack }: StackContext) {
   const table = use(Database);
   const botPublicKey = new Config.Secret(stack, "BOT_PUBLIC_KEY");
 
-  const onboardQueue = new Queue(stack, "onboardQueue", {
-    consumer: {
-      function: {
-        handler: "functions/onboardConsumer.handler",
-        bind: [table],
-      },
-    },
-  });
-
   const webSocketApi = new WebSocketApi(stack, "webSocketApi", {
     defaults: {
       function: {
@@ -37,7 +28,7 @@ export function Api({ stack }: StackContext) {
   const api = new ApiGateway(stack, "api", {
     defaults: {
       function: {
-        bind: [table, botPublicKey, onboardQueue, webSocketApi],
+        bind: [table, botPublicKey, webSocketApi],
         permissions: ["execute-api"],
       },
     },
@@ -53,8 +44,9 @@ export function Api({ stack }: StackContext) {
   const botQueue = new Queue(stack, "botQueue", {
     consumer: {
       function: {
-        bind: [table, onboardQueue, webSocketApi],
+        bind: [table, webSocketApi],
         environment: { HANDLER_TYPE: "consumer" },
+        permissions: ["execute-api"],
         handler: "functions/bot/consumer.handler",
       },
     },
@@ -68,7 +60,6 @@ export function Api({ stack }: StackContext) {
   return {
     api,
     webSocketApi,
-    onboardQueue,
     botQueue,
   };
 }

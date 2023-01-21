@@ -5,7 +5,7 @@ import {
   compareXY,
   Coords,
   genericResponse,
-  runnerResponse,
+  genericResult,
 } from "@bombadil/bot/common";
 
 export const building =
@@ -37,7 +37,7 @@ export const building =
       // building already exists
       ctx.hasBuilding(coords)
     ) {
-      return runnerResponse("illegal move");
+      return genericResult("illegal move");
     }
 
     return {

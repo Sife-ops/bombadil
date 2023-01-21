@@ -1,4 +1,39 @@
+import { UserEntityType } from "@bombadil/core/entity";
+import { model } from "@bombadil/core/model";
 import { z } from "zod";
+
+export const onboardUser = async (u: UserEntityType & { id: string }) => {
+  return model.entities.UserEntity.get({ userId: u.id })
+    .go()
+    .then((e) => e.data)
+    .then(async (user) => {
+      if (!user) {
+        await model.entities.UserEntity.create({
+          userId: u.id,
+          username: u.username,
+          discriminator: u.discriminator,
+          avatar: u.avatar || "",
+        }).go();
+        return;
+      }
+
+      if (
+        user.avatar !== u.avatar ||
+        user.discriminator !== u.discriminator ||
+        user.username !== u.username
+      ) {
+        await model.entities.UserEntity.update({
+          userId: user.userId,
+        })
+          .set({
+            username: u.username,
+            discriminator: u.discriminator,
+            avatar: u.avatar,
+          })
+          .go();
+      }
+    });
+};
 
 export const randomNoRepeat = <T>(array: T[]) => {
   let copy = array.slice(0);
@@ -138,9 +173,12 @@ export const genericResponse = (content: string) => {
   };
 };
 
-export const runnerResponse = (content: string) => {
+export const genericResult = (
+  content: string,
+  mutations: Promise<any>[] = []
+) => {
   return {
-    mutations: [],
+    mutations: mutations,
     response: genericResponse(content),
   };
 };

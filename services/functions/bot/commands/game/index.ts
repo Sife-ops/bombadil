@@ -1,5 +1,5 @@
 import * as subcommands from "./subcommands";
-import { runnerResponse } from "@bombadil/bot/common";
+import { genericResult } from "@bombadil/bot/common";
 import { runner, Command } from "@bombadil/bot/runner";
 
 export const game: Command = {
@@ -9,14 +9,14 @@ export const game: Command = {
       bot: async () => {
         if (["add", "remove", "start", "cancel"].includes(subcommandName)) {
           if (!ctx.hasGame()) {
-            return runnerResponse("game does not exist");
+            return genericResult("game does not exist");
           } else if (ctx.getGame().userId !== ctx.getUserId()) {
-            return runnerResponse("you are not the organizer");
+            return genericResult("you are not the organizer");
           } else if (
             ["add", "remove", "start"].includes(subcommandName) &&
             ctx.getGame().started
           ) {
-            return runnerResponse("game already started");
+            return genericResult("game already started");
           }
         }
 

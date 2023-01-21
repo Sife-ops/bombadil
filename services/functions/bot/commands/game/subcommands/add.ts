@@ -1,27 +1,28 @@
-import { genericResponse, runnerResponse } from "@bombadil/bot/common";
 import { Command } from "@bombadil/bot/runner";
 import { model } from "@bombadil/core/model";
+import { genericResponse, genericResult } from "@bombadil/bot/common";
 
 export const add: Command = {
   handler: async (ctx) => {
+    const { gameId } = ctx.getGame();
+    const userId = ctx.getOptionValue("player") as string;
+
     return {
       bot: async () => {
-        const { gameId } = ctx.getGame();
-        const userId = ctx.getOptionValue("player") as string;
-
-        if (!!ctx.getPlayers().find((p) => p.userId === userId)) {
-          return runnerResponse("already added");
-        }
-
+        return !!ctx.getPlayers().find((p) => p.userId === userId)
+          ? genericResult(`already added <@${userId}>`)
+          : {
+              mutations: [ctx.enqueueBot()],
+              response: genericResponse(`added <@${userId}>`),
+            };
+      },
+      consumer: async () => {
         return {
           mutations: [
             model.entities.PlayerEntity.create({ gameId, userId }).go(),
           ],
-          response: genericResponse("added player"),
+          response: {},
         };
-      },
-      consumer: async () => {
-        return;
       },
     };
   },

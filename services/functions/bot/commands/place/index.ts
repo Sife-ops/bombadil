@@ -1,6 +1,6 @@
 import * as subcommands from "./subcommands";
 import { runner, Command } from "@bombadil/bot/runner";
-import { runnerResponse } from "@bombadil/bot/common";
+import { genericResult } from "@bombadil/bot/common";
 
 export const place: Command = {
   handler: async (ctx) => {
@@ -10,7 +10,7 @@ export const place: Command = {
           ctx.getRound() < 2 &&
           !["stlmnt", "road"].includes(ctx.getCommandName(1))
         ) {
-          return runnerResponse("can only place settlement or road");
+          return genericResult("can only place settlement or road");
         }
 
         return runner(subcommands, ctx.getCommandName(1), ctx);

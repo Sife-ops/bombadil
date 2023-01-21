@@ -2,7 +2,7 @@ import { Command } from "@bombadil/bot/runner";
 import { Config } from "@serverless-stack/node/config";
 import { StaticSite } from "@serverless-stack/node/site";
 import { model } from "@bombadil/core/model";
-import { runnerResponse } from "@bombadil/bot/common";
+import { genericResult } from "@bombadil/bot/common";
 
 export const create: Command = {
   handler: async (ctx) => ({
@@ -18,7 +18,7 @@ export const create: Command = {
 
       // 1) one game per channel
       if (ctx.hasGame()) {
-        return runnerResponse("game already exists");
+        return genericResult("game already exists");
       }
 
       // 2) map must exist
@@ -28,7 +28,7 @@ export const create: Command = {
         .then(({ data }) => data[0]?.data);
 
       if (!map) {
-        return runnerResponse("map does not exist");
+        return genericResult("map does not exist");
       }
 
       // 3) create game

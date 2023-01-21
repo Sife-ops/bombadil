@@ -6,10 +6,10 @@ import {
 
 import * as commands from "./commands";
 import nacl from "tweetnacl";
+import { Config } from "@serverless-stack/node/config";
+import { Ctx } from "./ctx";
 import { genericResponse } from "./common";
 import { runner } from "@bombadil/bot/runner";
-import { Ctx } from "./ctx";
-import { Config } from "@serverless-stack/node/config";
 
 export const handler: Handler<
   APIGatewayProxyEventV2,
@@ -38,6 +38,7 @@ export const handler: Handler<
 
       case 2: {
         const ctx = await Ctx.init(body);
+        await Promise.all(ctx.onboardUsers());
 
         const commandName = ctx.getCommandName(0);
         if (!["game", "foo"].includes(commandName)) {
@@ -58,12 +59,7 @@ export const handler: Handler<
         const result = await runner(commands, commandName, ctx);
         if (!result) throw new Error("missing result");
 
-        await Promise.all([
-          //
-          ...result.mutations,
-          ctx.enqueueUsers(),
-        ]);
-
+        await Promise.all(result.mutations);
         return result.response;
       }
 

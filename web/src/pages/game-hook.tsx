@@ -80,7 +80,6 @@ export const useGame = () => {
   useEffect(() => {
     if (gameData) {
       const g = gameData.gameCollection;
-
       const map = JSON.parse(g.GameEntity[0].map) as any[][];
       const flatMap = map
         .map((row, iRow) =>
@@ -94,7 +93,7 @@ export const useGame = () => {
           return [...a, ...c];
         }, [])
         .filter((e) => ["ocean", "harbor"].includes(e.type));
-
+      console.log(flatMap);
       setHexes([...flatMap, ...g.TerrainEntity].map(translate).map(mapHexes));
       setChits(g.ChitEntity.map(translate).map(mapChits));
       setHarbors(g.HarborEntity.map(translate).map(mapHarbors));
@@ -164,15 +163,18 @@ const mapHarbors = ({ x, y, resource }: Entity.HarborEntityType) => (
 );
 
 const mapPlayers = (users: Entity.UserEntityType[]) => {
+  console.log(users)
   return (player: Entity.PlayerEntityType) => {
-    const playerUser = {
-      ...player,
-      user: users.find((u) => u.userId === player.userId)!,
-    };
+    // console.log(player)
+    // const playerUser = {
+    //   ...player,
+    //   user: users.find((u) => u.userId === player.userId)!,
+    // };
     return (
       <div key={player.playerId}>
         <div>
-          {playerUser.user.username}#{playerUser.user.discriminator}
+          {/* {playerUser.user.username}#{playerUser.user.discriminator} */}
+          {JSON.stringify(player)}
         </div>
       </div>
     );

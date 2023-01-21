@@ -1,13 +1,13 @@
 import { Command } from "@bombadil/bot/runner";
 import { TerrainEntityType } from "@bombadil/core/entity";
+import { model } from "@bombadil/core/model";
+
 import {
   genericResponse,
   randomNoRepeat,
   rollTwo,
-  runnerResponse,
+  genericResult,
 } from "@bombadil/bot/common";
-import { model } from "@bombadil/core/model";
-import { Queue } from "@serverless-stack/node/queue";
 
 export const start: Command = {
   handler: async (ctx) => {
@@ -48,7 +48,7 @@ export const start: Command = {
 
         // 1) count players
         if (ctx.getPlayers().length < 2) {
-          return runnerResponse("not enough players");
+          return genericResult("not enough players");
         }
 
         // todo: "too many players" condition
@@ -164,48 +164,51 @@ export const start: Command = {
 
         const harborChooser = randomNoRepeat(harborResources);
 
-        await Promise.all([
-          // 3) create entities
-          ...resources.map((e) => model.entities.TerrainEntity.create(e).go()),
-          ...resources
-            .filter((e) => e.terrain !== "desert")
-            .map(({ x, y }) =>
-              model.entities.ChitEntity.create({
+        return {
+          mutations: [
+            // 3) create entities
+            ...resources.map((e) =>
+              model.entities.TerrainEntity.create(e).go()
+            ),
+            ...resources
+              .filter((e) => e.terrain !== "desert")
+              .map(({ x, y }) =>
+                model.entities.ChitEntity.create({
+                  gameId,
+                  value: chitChooser(),
+                  x,
+                  y,
+                }).go()
+              ),
+            ...harbors.map(({ x, y }) => {
+              const chosen = harborChooser();
+              return model.entities.HarborEntity.create({
                 gameId,
-                value: chitChooser(),
+                // @ts-ignore
+                resource: chosen,
+                ratio: chosen === "any" ? "3:1" : "2:1",
                 x,
                 y,
-              }).go()
+              }).go();
+            }),
+
+            // 4) player order
+            ...players.map((player, i) =>
+              model.entities.PlayerEntity.update(player)
+                .set({ playerIndex: i })
+                .go()
             ),
-          ...harbors.map(({ x, y }) => {
-            const chosen = harborChooser();
-            return model.entities.HarborEntity.create({
+
+            // 5) start game
+            model.entities.GameEntity.update({
+              channelId,
               gameId,
-              // @ts-ignore
-              resource: chosen,
-              ratio: chosen === "any" ? "3:1" : "2:1",
-              x,
-              y,
-            }).go();
-          }),
-
-          // 4) player order
-          ...players.map((player, i) =>
-            model.entities.PlayerEntity.update(player)
-              .set({ playerIndex: i })
-              .go()
-          ),
-
-          // 5) start game
-          model.entities.GameEntity.update({
-            channelId,
-            gameId,
-          })
-            .set({ started: true })
-            .go(),
-        ]);
-
-        return;
+            })
+              .set({ started: true })
+              .go(),
+          ],
+          response: {},
+        };
       },
     };
   },

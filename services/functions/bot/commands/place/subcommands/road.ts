@@ -5,7 +5,7 @@ import {
   compareXY,
   Coords,
   genericResponse,
-  runnerResponse,
+  genericResult,
 } from "@bombadil/bot/common";
 
 export const road: Command = {
@@ -42,7 +42,7 @@ export const road: Command = {
           // road already exists
           ctx.hasRoad({ from, to })
         ) {
-          return runnerResponse("illegal move");
+          return genericResult("illegal move");
         }
 
         return {

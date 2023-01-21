@@ -8,6 +8,7 @@ import {
   compareXYPair,
   Coords,
   CoordsPair,
+  onboardUser,
   OptionSchema,
 } from "./common";
 import { Queue } from "@serverless-stack/node/queue";
@@ -242,9 +243,13 @@ export class Ctx {
   }
 
   allMessages(message: any) {
-    return this.getGameCollection().ConnectionEntity.map(({ connectionId }) =>
-      this.messageClient(connectionId, message)
-    );
+    try {
+      return this.getGameCollection().ConnectionEntity.map(({ connectionId }) =>
+        this.messageClient(connectionId, message)
+      );
+    } catch {
+      return [];
+    }
   }
 
   messageAll(message: any) {
@@ -261,31 +266,23 @@ export class Ctx {
       .promise();
   }
 
-  enqueueOnboardUser(user: any) {
-    return this.service.sqs
-      .sendMessage({
-        QueueUrl: Queue.onboardQueue.queueUrl,
-        MessageBody: JSON.stringify(user),
-      })
-      .promise();
+  // onboard
+  onboardMember() {
+    return onboardUser(this.getUser());
   }
 
-  enqueueMember() {
-    return this.enqueueOnboardUser(this.getUser());
-  }
-
-  enqueueResolved() {
+  onboardResolved() {
     try {
       const resolved = this.getResolvedUsers();
       return Object.keys(resolved)
         .map((key) => resolved[key])
-        .map((user) => this.enqueueOnboardUser(user));
+        .map((user) => onboardUser(user));
     } catch {
       return [];
     }
   }
 
-  enqueueUsers() {
-    return [this.enqueueMember(), ...this.enqueueResolved()];
+  onboardUsers() {
+    return [this.onboardMember(), ...this.onboardResolved()];
   }
 }
