@@ -198,7 +198,9 @@ export class Ctx {
   }
 
   getPlayerRoads() {
-    return this.getRoads().filter((road) => road.playerId === this.getUserId());
+    return this.getRoads().filter(
+      (road) => road.playerId === this.getPlayer().playerId
+    );
   }
 
   hasRoad(r: CoordsPair) {
@@ -212,7 +214,7 @@ export class Ctx {
 
   getPlayerBuildings() {
     return this.getBuildings().filter(
-      (building) => building.playerId === this.getUserId()
+      (building) => building.playerId === this.getPlayer().playerId
     );
   }
 

@@ -165,6 +165,16 @@ export const start: Command = {
 
         const harborChooser = randomNoRepeat(harborResources);
 
+        // todo: more colors
+        // todo: move to lib?
+        const colorChooser = randomNoRepeat([
+          "red",
+          "yellow",
+          "green",
+          "aqua",
+          "fuchsia",
+        ]);
+
         return {
           mutations: [
             // 3) create entities
@@ -193,10 +203,13 @@ export const start: Command = {
               }).go();
             }),
 
-            // 4) player order
+            // 4) player order and color
             ...players.map((player, i) =>
               model.entities.PlayerEntity.update(player)
-                .set({ playerIndex: i })
+                .set({
+                  playerIndex: i,
+                  color: colorChooser(),
+                })
                 .go()
             ),
 

@@ -107,8 +107,12 @@ export const useGame = () => {
           .map(mapHexes)
       );
       setChits(g.ChitEntity.map(translate).map(mapChits));
-      setRoads(g.RoadEntity.map(mapRoads));
-      setSettlements(g.BuildingEntity.map(translate).map(mapSettlements));
+      setRoads(g.RoadEntity.map(mapRoads(g.PlayerEntity)));
+      setSettlements(
+        g.BuildingEntity.map(translate).map(
+          mapBuildings("settlement")(g.PlayerEntity)
+        )
+      );
       setHarbors(g.HarborEntity.map(translate).map(mapHarbors));
       setJetties(flatMap.filter((e) => _.has(e, "harbor")).map(mapJetties));
       setPlayers(g.PlayerEntity.map(mapPlayers(gameData.users)));
@@ -155,37 +159,48 @@ const mapHexes = ({ x, y, terrain }: Entity.TerrainEntityType) => (
 );
 
 // todo: mapBuildings
-const mapSettlements = ({ x, y }: Entity.BuildingEntityType) => (
-  <g transform={`translate(${x}, ${y})`} key={`x${x}y${y}`}>
-    <polygon
-      stroke="#000000"
-      strokeWidth="0.5"
-      // todo: player colors
-      style={{ fill: "firebrick" }}
-      points="0,-2 2,-0 2,2 -2,2 -2,-0"
-    />
-  </g>
-);
+const mapBuildings =
+  (building: "city" | "settlement") =>
+  (players: Entity.PlayerEntityType[]) =>
+  (b: Entity.BuildingEntityType) => {
+    const { x, y } = b;
+    const color =
+      players.find((p) => p.playerId === b.playerId)?.color || "white";
+    return (
+      <g transform={`translate(${x}, ${y})`} key={`x${x}y${y}`}>
+        <polygon
+          stroke="#000000"
+          strokeWidth="0.5"
+          style={{ fill: color }}
+          points={
+            building === "settlement"
+              ? "0,-2 2,0 2,2 -2,2 -2,0"
+              : "-1,-2 0,0 2,0 2,2 -2,2 -2,0"
+          }
+        />
+      </g>
+    );
+  };
 
-const mapRoads = (road: Entity.RoadEntityType) => {
-  const a = translate({ x: road.x1, y: road.y1 });
-  const b = translate({ x: road.x2, y: road.y2 });
-
-  return (
-    <g key={road.roadId}>
-      <line
-        x1={a.x}
-        y1={a.y}
-        x2={b.x}
-        y2={b.y}
-        strokeWidth="2"
-        style={{
-          stroke: "yellow",
-        }}
-      />
-    </g>
-  );
-};
+const mapRoads =
+  (players: Entity.PlayerEntityType[]) => (road: Entity.RoadEntityType) => {
+    const a = translate({ x: road.x1, y: road.y1 });
+    const b = translate({ x: road.x2, y: road.y2 });
+    const color =
+      players.find((p) => p.playerId === road.playerId)?.color || "white";
+    return (
+      <g key={road.roadId}>
+        <line
+          x1={a.x}
+          y1={a.y}
+          x2={b.x}
+          y2={b.y}
+          strokeWidth="2"
+          style={{ stroke: color }}
+        />
+      </g>
+    );
+  };
 
 const mapChits = ({ x, y, value }: Entity.ChitEntityType) => (
   <g transform={`translate(${x}, ${y})`} key={`x${x}y${y}`}>
@@ -243,7 +258,7 @@ const mapJetties = ({ x, y, harbor }: Coords & { harbor: Coords }) => {
 };
 
 const mapPlayers = (users: Entity.UserEntityType[]) => {
-  console.log(users);
+  // console.log(users);
   return (player: Entity.PlayerEntityType) => {
     // console.log(player)
     // const playerUser = {

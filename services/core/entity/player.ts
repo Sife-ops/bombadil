@@ -78,6 +78,11 @@ export const PlayerEntity = new Entity(
         required: true,
         default: 0,
       },
+
+      color: {
+        type: "string",
+        required: true,
+      },
     },
 
     model: {

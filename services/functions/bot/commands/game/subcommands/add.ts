@@ -19,7 +19,11 @@ export const add: Command = {
       consumer: async () => {
         return {
           mutations: [
-            model.entities.PlayerEntity.create({ gameId, userId }).go(),
+            model.entities.PlayerEntity.create({
+              gameId,
+              userId,
+              color: "",
+            }).go(),
           ],
           response: {},
         };

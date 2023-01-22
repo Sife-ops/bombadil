@@ -45,6 +45,7 @@ export const road: Command = {
           response: genericResponse("place road"),
         };
       },
+
       consumer: async () => {
         return {
           mutations: [
@@ -54,7 +55,7 @@ export const road: Command = {
               x2: to.x,
               y2: to.y,
               gameId: ctx.getGame().gameId,
-              playerId: ctx.getUserId(),
+              playerId: ctx.getPlayer().playerId,
             }).go(),
           ],
           response: {},

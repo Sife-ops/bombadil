@@ -54,7 +54,7 @@ export const building = (building: "settlement" | "city"): Command => ({
               ...coords,
               building,
               gameId: ctx.getGame().gameId,
-              playerId: ctx.getUserId(),
+              playerId: ctx.getPlayer().playerId,
             }).go(),
           ],
           response: {},

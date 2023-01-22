@@ -42,7 +42,11 @@ export const create: Command = {
 
       return {
         mutations: [
-          model.entities.PlayerEntity.create({ gameId, userId }).go(),
+          model.entities.PlayerEntity.create({
+            gameId,
+            userId,
+            color: "",
+          }).go(),
         ],
         response: {
           type: 4,
