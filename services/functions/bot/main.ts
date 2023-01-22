@@ -37,7 +37,7 @@ export const bot: Handler<
       }
 
       case 2: {
-        const ctx = await Ctx.init(body);
+        const ctx = await Ctx.init({ interactionBody: body });
         await Promise.all(ctx.onboardUsers());
 
         const commandName = ctx.getCommandName(0);
@@ -77,7 +77,8 @@ export const bot: Handler<
 
 export const consumer = async (event: any) => {
   try {
-    const ctx = await Ctx.init(JSON.parse(event.Records[0].body));
+    const messageBody = JSON.parse(event.Records[0].body);
+    const ctx = await Ctx.init(messageBody);
     const result = await runner(commands, ctx.getCommandName(0), ctx);
 
     await Promise.all([...(result ? result.mutations : [])]);

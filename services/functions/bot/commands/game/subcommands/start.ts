@@ -11,18 +11,22 @@ import {
 
 export const start: Command = {
   handler: async (ctx) => {
-    const players = ctx
-      .getGameCollection()
-      .PlayerEntity.map((player) => ({
-        ...player,
-        roll: rollTwo(),
-      }))
-      .sort((a, b) => b.roll - a.roll);
-
     return {
       bot: async () => {
+        const players = ctx
+          .getGameCollection()
+          .PlayerEntity.map((player) => ({
+            ...player,
+            roll: rollTwo(),
+          }))
+          .sort((a, b) => b.roll - a.roll);
+
         return {
-          mutations: [ctx.enqueueBot()],
+          mutations: [
+            ctx.enqueueBot({
+              PlayerEntity: players,
+            }),
+          ],
           response: genericResponse(
             `game started, <@${players[0].userId}>'s turn`
           ),
@@ -204,7 +208,7 @@ export const start: Command = {
             }),
 
             // 4) player order and color
-            ...players.map((player, i) =>
+            ...ctx.getInteractionResultPlayers().map((player, i) =>
               model.entities.PlayerEntity.update(player)
                 .set({
                   playerIndex: i,

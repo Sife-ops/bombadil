@@ -18,16 +18,19 @@ const wsApi = new AWS.ApiGatewayManagementApi({
 });
 
 export class Ctx {
-  body;
+  interactionBody;
+  interactionResult;
   gameCollection;
   handlerType;
   service;
 
   private constructor(c: {
-    body: any;
-    gameCollection: GameCollection | undefined;
+    interactionBody: any;
+    interactionResult?: Partial<GameCollection>;
+    gameCollection?: GameCollection;
   }) {
-    this.body = c.body;
+    this.interactionBody = c.interactionBody;
+    this.interactionResult = c.interactionResult;
     this.gameCollection = c.gameCollection;
     this.handlerType = process.env.HANDLER_TYPE as "bot" | "consumer";
     this.service = {
@@ -36,9 +39,15 @@ export class Ctx {
     };
   }
 
-  static async init(body: any) {
+  static async init({
+    interactionBody,
+    interactionResult,
+  }: {
+    interactionBody: any;
+    interactionResult?: Partial<GameCollection>;
+  }) {
     const gameCollection = await model.entities.GameEntity.query
-      .channel({ channelId: body.channel_id })
+      .channel({ channelId: interactionBody.channel_id })
       .where(({ winner }, { notExists }) => notExists(winner))
       .go()
       .then(({ data }) => data[0])
@@ -51,18 +60,19 @@ export class Ctx {
       });
 
     return new Ctx({
-      body,
+      interactionBody,
+      interactionResult,
       gameCollection,
     });
   }
 
   // body
   getChannelId(): string {
-    return this.body.channel_id;
+    return this.interactionBody.channel_id;
   }
 
   getUser() {
-    return this.body.member.user;
+    return this.interactionBody.member.user;
   }
 
   getUserId(): string {
@@ -82,7 +92,7 @@ export class Ctx {
 
     const {
       data: { name, options, type },
-    } = this.body;
+    } = this.interactionBody;
 
     return [
       [
@@ -185,7 +195,7 @@ export class Ctx {
   }
 
   getResolvedUsers() {
-    return this.body.data.resolved.users;
+    return this.interactionBody.data.resolved.users;
   }
 
   // road
@@ -258,13 +268,28 @@ export class Ctx {
   }
 
   // queue
-  enqueueBot() {
+  enqueueBot(message: Partial<GameCollection> = {}) {
     return this.service.sqs
       .sendMessage({
         QueueUrl: Queue.botQueue.queueUrl,
-        MessageBody: JSON.stringify(this.body),
+        MessageBody: JSON.stringify({
+          interactionBody: this.interactionBody,
+          interactionResult: message,
+        }),
       })
       .promise();
+  }
+
+  // interactionResult
+  getInteractionResult() {
+    if (!this.interactionResult) throw new Error("missing interactionResult");
+    return this.interactionResult;
+  }
+
+  getInteractionResultPlayers() {
+    const { PlayerEntity } = this.getInteractionResult();
+    if (!PlayerEntity) throw new Error("missing PlayerEntity");
+    return PlayerEntity;
   }
 
   // onboard
