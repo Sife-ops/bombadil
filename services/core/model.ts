@@ -12,6 +12,7 @@ export const model = new Service({
   RoadEntity: Entity.RoadEntity,
   TerrainEntity: Entity.TerrainEntity,
   ConnectionEntity: Entity.ConnectionEntity,
+  RobberEntity: Entity.RobberEntity,
 });
 
 export interface GameCollection {
@@ -23,4 +24,5 @@ export interface GameCollection {
   RoadEntity: Entity.RoadEntityType[];
   TerrainEntity: Entity.TerrainEntityType[];
   ConnectionEntity: Entity.ConnectionEntityType[];
+  RobberEntity: Entity.RobberEntityType[];
 }

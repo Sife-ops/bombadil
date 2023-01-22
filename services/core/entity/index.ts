@@ -8,3 +8,4 @@ export * from "./player";
 export * from "./road";
 export * from "./terrain";
 export * from "./user";
+export * from "./robber";

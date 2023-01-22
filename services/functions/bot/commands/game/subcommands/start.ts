@@ -195,6 +195,15 @@ export const start: Command = {
                   y,
                 }).go()
               ),
+            ...resources
+              .filter((e) => e.terrain === "desert")
+              .map((e) =>
+                model.entities.RobberEntity.create({
+                  gameId,
+                  x: e.x,
+                  y: e.y,
+                }).go()
+              ),
             ...harbors.map(({ x, y }) => {
               const chosen = harborChooser();
               return model.entities.HarborEntity.create({

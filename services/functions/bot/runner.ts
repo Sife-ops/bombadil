@@ -24,7 +24,7 @@ export const runner = async (
   const command = commands[commandName];
 
   if (command.schema) {
-    command.schema.parse(ctx.body);
+    command.schema.parse(ctx.interactionBody);
   }
 
   const h = await command.handler(ctx);

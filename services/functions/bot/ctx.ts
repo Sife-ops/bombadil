@@ -157,13 +157,8 @@ export class Ctx {
   }
 
   getMapAdjacent(type: string, coords: Coords) {
-    const adj = adjXY(coords).map((offset) => ({
-      x: coords.x + offset.x,
-      y: coords.y + offset.y,
-    }));
-
     return this.getFlatMap()
-      .filter((c) => adj.find((cc) => compareXY(cc, c)))
+      .filter((c) => adjXY(coords).find((cc) => compareXY(cc, c)))
       .filter((c) => c.type === type) as Coords[];
   }
 

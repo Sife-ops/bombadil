@@ -24,6 +24,7 @@ export const useGame = () => {
   const [jetties, setJetties] = useState<JSX.Element[]>();
   const [settlements, setSettlements] = useState<JSX.Element[]>();
   const [roads, setRoads] = useState<JSX.Element[]>();
+  const [robbers, setRobbers] = useState<JSX.Element[]>();
   const [players, setPlayers] = useState<JSX.Element[]>();
 
   const updateGameData = () => {
@@ -107,6 +108,7 @@ export const useGame = () => {
           .map(mapHexes)
       );
       setChits(g.ChitEntity.map(translate).map(mapChits));
+      setRobbers(g.RobberEntity.map(translate).map(mapRobbers));
       setRoads(g.RoadEntity.map(mapRoads(g.PlayerEntity)));
       setSettlements(
         g.BuildingEntity.map(translate).map(
@@ -122,6 +124,7 @@ export const useGame = () => {
   return {
     hexes,
     chits,
+    robbers,
     harbors,
     jetties,
     roads,
@@ -211,6 +214,12 @@ const mapChits = ({ x, y, value }: Entity.ChitEntityType) => (
   </g>
 );
 
+const mapRobbers = ({ x, y }: Entity.RobberEntityType) => (
+  <g transform={`translate(${x}, ${y})`} key={`x${x}y${y}`}>
+    <circle cx={0} cy={0} r={3} style={{ fill: "black" }} />
+  </g>
+);
+
 const mapHarbors = ({ x, y, resource }: Entity.HarborEntityType) => (
   <g transform={`translate(${x}, ${y})`} key={`x${x}y${y}`}>
     <polygon
@@ -232,14 +241,7 @@ const mapJetties = ({ x, y, harbor }: Coords & { harbor: Coords }) => {
     { x: -5, y: 9 },
     { x: -10, y: 0 },
     { x: -5, y: -9 },
-  ][
-    adjXY(harbor)
-      .map((offset) => ({
-        x: harbor.x + offset.x,
-        y: harbor.y + offset.y,
-      }))
-      .findIndex((i) => compareXY(i, { x, y }))
-  ];
+  ][adjXY(harbor).findIndex((i) => compareXY(i, { x, y }))];
 
   return (
     <g transform={`translate(${h.x}, ${h.y})`} key={`x${x}y${y}`}>

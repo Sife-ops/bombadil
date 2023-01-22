@@ -83,6 +83,36 @@ export const PlayerEntity = new Entity(
         type: "string",
         required: true,
       },
+
+      grain: {
+        type: "number",
+        required: true,
+        default: 0,
+      },
+
+      wool: {
+        type: "number",
+        required: true,
+        default: 0,
+      },
+
+      brick: {
+        type: "number",
+        required: true,
+        default: 0,
+      },
+
+      lumber: {
+        type: "number",
+        required: true,
+        default: 0,
+      },
+
+      ore: {
+        type: "number",
+        required: true,
+        default: 0,
+      },
     },
 
     model: {

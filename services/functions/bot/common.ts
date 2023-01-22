@@ -129,6 +129,31 @@ export const onboardUser = async (u: UserEntityType & { id: string }) => {
     });
 };
 
+const terrainResources: Record<
+  "pasture" | "fields" | "mountains" | "hills" | "forest" | "desert",
+  "wool" | "grain" | "ore" | "brick" | "lumber" | "none"
+> = {
+  pasture: "wool",
+  fields: "grain",
+  mountains: "ore",
+  hills: "brick",
+  forest: "lumber",
+  desert: "none",
+};
+
+export const terrainResource = <
+  T extends {
+    terrain: "pasture" | "fields" | "mountains" | "hills" | "forest" | "desert";
+  }
+>(
+  t: T
+) => {
+  return {
+    ...t,
+    resource: terrainResources[t.terrain],
+  };
+};
+
 export const randomNoRepeat = <T>(array: T[]) => {
   let copy = array.slice(0);
   return () => {

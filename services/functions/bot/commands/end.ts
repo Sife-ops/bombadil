@@ -1,6 +1,13 @@
 import { Command } from "../runner";
-import { genericResponse, genericResult } from "@bombadil/bot/common";
 import { model } from "@bombadil/core/model";
+import { adjXY, compareXY } from "@bombadil/lib";
+
+import {
+  genericResponse,
+  genericResult,
+  rollTwo,
+  terrainResource,
+} from "@bombadil/bot/common";
 
 export const end: Command = {
   handler: async (ctx) => {
@@ -31,21 +38,86 @@ export const end: Command = {
       },
 
       consumer: async () => {
-        return {
-          mutations: [
-            model.entities.GameEntity.update({
-              channelId: ctx.getChannelId(),
-              gameId: ctx.getGame().gameId,
+        const nextTurnRound =
+          ctx.getPlayer().playerIndex < ctx.getPlayers().length - 1
+            ? ctx.getGame().round
+            : ctx.getGame().round + 1;
+
+        console.log("nextTurnRound", nextTurnRound);
+
+        let mutations: Promise<any>[] = [
+          model.entities.GameEntity.update({
+            channelId: ctx.getChannelId(),
+            gameId: ctx.getGame().gameId,
+          })
+            .set({
+              playerIndex: nextPlayerIndex,
+              round: nextTurnRound,
             })
-              .set({
-                playerIndex: nextPlayerIndex,
-                round:
-                  ctx.getPlayer().playerIndex < ctx.getPlayers().length - 1
-                    ? ctx.getGame().round
-                    : ctx.getGame().round + 1,
+            .go(),
+        ];
+
+        if (nextTurnRound < 2) {
+          return {
+            mutations,
+            response: {},
+          };
+        }
+
+        const roll = rollTwo();
+        console.log("roll", roll);
+        if (roll === 7) {
+          const t = ctx.getGameCollection().TerrainEntity;
+          const r = t[Math.floor(Math.random() * t.length)];
+          const rb = ctx.getGameCollection().RobberEntity[0];
+          mutations.push(
+            model.entities.RobberEntity.update({
+              robberId: rb.robberId,
+            })
+              .set({ x: r.x, y: r.y })
+              .go()
+          );
+        } else {
+          // distribute resources
+          mutations.push(
+            ...ctx
+              .getGameCollection()
+              .ChitEntity.filter((chit) => chit.value === roll)
+              .map((chit) => {
+                const { terrain } = ctx
+                  .getGameCollection()
+                  .TerrainEntity.find((t) => compareXY(t, chit))!;
+                const buildings = ctx
+                  .getBuildings()
+                  .filter(
+                    (building) =>
+                      !!adjXY(chit).find((adj) => compareXY(adj, building))
+                  );
+                return {
+                  ...chit,
+                  terrain,
+                  buildings,
+                };
               })
-              .go(),
-          ],
+              .map(terrainResource)
+              .reduce<Promise<any>[]>((a, c) => {
+                if (c.buildings.length < 1) return a;
+                return [
+                  ...a,
+                  ...c.buildings.map((b) => {
+                    return model.entities.PlayerEntity.update({
+                      playerId: b.playerId,
+                    })
+                      .add({ [c.resource]: b.building === "city" ? 2 : 1 })
+                      .go();
+                  }),
+                ];
+              }, [])
+          );
+        }
+
+        return {
+          mutations,
           response: {},
         };
       },

@@ -19,29 +19,14 @@ export const compareXYPair = (a: CoordsPair, b: CoordsPair) => {
 export const adjXY = (coords: Coords) => {
   const evenY = !(coords.y % 2 > 0);
   return [
-    {
-      x: evenY ? 0 : 1,
-      y: -1,
-    },
-    {
-      x: 1,
-      y: 0,
-    },
-    {
-      x: evenY ? 0 : 1,
-      y: 1,
-    },
-    {
-      x: evenY ? -1 : 0,
-      y: 1,
-    },
-    {
-      x: -1,
-      y: 0,
-    },
-    {
-      x: evenY ? -1 : 0,
-      y: -1,
-    },
-  ];
+    { x: evenY ? 0 : 1, y: -1 },
+    { x: 1, y: 0 },
+    { x: evenY ? 0 : 1, y: 1 },
+    { x: evenY ? -1 : 0, y: 1 },
+    { x: -1, y: 0 },
+    { x: evenY ? -1 : 0, y: -1 },
+  ].map((offset) => ({
+    x: coords.x + offset.x,
+    y: coords.y + offset.y,
+  }));
 };
