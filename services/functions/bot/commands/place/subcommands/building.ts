@@ -1,13 +1,8 @@
 import { Command } from "@bombadil/bot/runner";
 import { Ctx } from "@bombadil/bot/ctx";
 import { model } from "@bombadil/core/model";
-
-import {
-  Coords,
-  genericResponse,
-  genericResult,
-} from "@bombadil/bot/common";
-import { compareXY } from "@bombadil/bot/lib";
+import { genericResponse, genericResult } from "@bombadil/bot/common";
+import { compareXY, Coords } from "@bombadil/lib";
 
 export const building = (building: "settlement" | "city"): Command => ({
   handler: async (ctx: Ctx) => {

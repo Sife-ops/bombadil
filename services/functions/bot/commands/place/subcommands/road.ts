@@ -1,12 +1,7 @@
 import { Command } from "@bombadil/bot/runner";
 import { model } from "@bombadil/core/model";
-
-import {
-  Coords,
-  genericResponse,
-  genericResult,
-} from "@bombadil/bot/common";
-import { compareXY } from "@bombadil/bot/lib";
+import { genericResponse, genericResult } from "@bombadil/bot/common";
+import { compareXY, Coords } from "@bombadil/lib";
 
 export const road: Command = {
   handler: async (ctx) => {

@@ -28,6 +28,7 @@ export const start: Command = {
           ),
         };
       },
+
       consumer: async () => {
         const { gameId } = ctx.getGame();
         const flatMap = ctx.getFlatMap();

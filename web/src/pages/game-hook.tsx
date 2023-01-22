@@ -2,7 +2,7 @@ import * as Entity from "@bombadil/services/core/entity";
 import Sockette from "sockette";
 import _ from "lodash";
 import { GameCollection } from "@bombadil/services/core/model";
-import { adjXY, compareXY } from "@bombadil/lib";
+import { adjXY, compareXY, Coords } from "@bombadil/lib";
 import { ulid } from "ulid";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -22,6 +22,8 @@ export const useGame = () => {
   const [chits, setChits] = useState<JSX.Element[]>();
   const [harbors, setHarbors] = useState<JSX.Element[]>();
   const [jetties, setJetties] = useState<JSX.Element[]>();
+  const [settlements, setSettlements] = useState<JSX.Element[]>();
+  const [roads, setRoads] = useState<JSX.Element[]>();
   const [players, setPlayers] = useState<JSX.Element[]>();
 
   const updateGameData = () => {
@@ -105,6 +107,8 @@ export const useGame = () => {
           .map(mapHexes)
       );
       setChits(g.ChitEntity.map(translate).map(mapChits));
+      setRoads(g.RoadEntity.map(mapRoads));
+      setSettlements(g.BuildingEntity.map(translate).map(mapSettlements));
       setHarbors(g.HarborEntity.map(translate).map(mapHarbors));
       setJetties(flatMap.filter((e) => _.has(e, "harbor")).map(mapJetties));
       setPlayers(g.PlayerEntity.map(mapPlayers(gameData.users)));
@@ -116,6 +120,8 @@ export const useGame = () => {
     chits,
     harbors,
     jetties,
+    roads,
+    settlements,
     players,
 
     clientId,
@@ -124,11 +130,6 @@ export const useGame = () => {
     gameData,
   };
 };
-
-interface Coords {
-  x: number;
-  y: number;
-}
 
 function translate<T extends Coords>(c: T) {
   let x = c.x * 10;
@@ -152,6 +153,39 @@ const mapHexes = ({ x, y, terrain }: Entity.TerrainEntityType) => (
     />
   </g>
 );
+
+// todo: mapBuildings
+const mapSettlements = ({ x, y }: Entity.BuildingEntityType) => (
+  <g transform={`translate(${x}, ${y})`} key={`x${x}y${y}`}>
+    <polygon
+      stroke="#000000"
+      strokeWidth="0.5"
+      // todo: player colors
+      style={{ fill: "firebrick" }}
+      points="0,-2 2,-0 2,2 -2,2 -2,-0"
+    />
+  </g>
+);
+
+const mapRoads = (road: Entity.RoadEntityType) => {
+  const a = translate({ x: road.x1, y: road.y1 });
+  const b = translate({ x: road.x2, y: road.y2 });
+
+  return (
+    <g key={road.roadId}>
+      <line
+        x1={a.x}
+        y1={a.y}
+        x2={b.x}
+        y2={b.y}
+        strokeWidth="2"
+        style={{
+          stroke: "yellow",
+        }}
+      />
+    </g>
+  );
+};
 
 const mapChits = ({ x, y, value }: Entity.ChitEntityType) => (
   <g transform={`translate(${x}, ${y})`} key={`x${x}y${y}`}>

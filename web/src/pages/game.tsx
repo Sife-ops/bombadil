@@ -18,6 +18,8 @@ export const Game = () => {
             {game.chits}
             {game.jetties}
             {game.harbors}
+            {game.roads}
+            {game.settlements}
           </g>
         </svg>
       </div>
