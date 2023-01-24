@@ -14,12 +14,20 @@ export const road: Command = {
       (ctx.getOptionValue("ind2") as number) - 1
     );
 
+    const canAfford = () => {
+      const p = ctx.getPlayer();
+      if (p.brick < 1 || p.lumber < 1) return false;
+      return true;
+    };
+
     return {
       bot: async () => {
         if (
           // exceeds first-two-round limit
           (ctx.getRound() < 2 &&
             ctx.getPlayerRoads().length > ctx.getRound()) ||
+          // cannot afford
+          (ctx.getRound() > 1 && !canAfford()) ||
           // road not connected to player's building or road
           ![
             ...ctx.getPlayerBuildings(),
@@ -47,17 +55,32 @@ export const road: Command = {
       },
 
       consumer: async () => {
-        return {
-          mutations: [
-            model.entities.RoadEntity.create({
-              x1: from.x,
-              y1: from.y,
-              x2: to.x,
-              y2: to.y,
-              gameId: ctx.getGame().gameId,
+        const mutations: Promise<any>[] = [
+          model.entities.RoadEntity.create({
+            x1: from.x,
+            y1: from.y,
+            x2: to.x,
+            y2: to.y,
+            gameId: ctx.getGame().gameId,
+            playerId: ctx.getPlayer().playerId,
+          }).go(),
+        ];
+
+        if (ctx.getRound() > 1) {
+          mutations.push(
+            model.entities.PlayerEntity.update({
               playerId: ctx.getPlayer().playerId,
-            }).go(),
-          ],
+            })
+              .subtract({
+                brick: 1,
+                lumber: 1,
+              })
+              .go()
+          );
+        }
+
+        return {
+          mutations,
           response: {},
         };
       },

@@ -11,6 +11,17 @@ export const building = (building: "settlement" | "city"): Command => ({
       (ctx.getOptionValue("ind") as number) - 1 // todo: 0 start index doesn't work
     );
 
+    const canAfford = () => {
+      const p = ctx.getPlayer();
+      if (building === "settlement") {
+        if (p.brick < 1 || p.lumber < 1 || p.grain < 1 || p.wool < 1)
+          return false;
+      } else {
+        if (p.grain < 2 || p.ore < 3) return false;
+      }
+      return true;
+    };
+
     return {
       bot: async () => {
         if (
@@ -26,6 +37,8 @@ export const building = (building: "settlement" | "city"): Command => ({
                 []
               )
               .find((c) => compareXY(c, coords))) ||
+          // cannot afford
+          (ctx.getRound() > 1 && !canAfford()) ||
           // too close to another building
           ctx
             .getBuildings()
@@ -48,15 +61,30 @@ export const building = (building: "settlement" | "city"): Command => ({
       },
 
       consumer: async () => {
+        const mutations: Promise<any>[] = [
+          model.entities.BuildingEntity.create({
+            ...coords,
+            building,
+            gameId: ctx.getGame().gameId,
+            playerId: ctx.getPlayer().playerId,
+          }).go(),
+        ];
+
+        if (ctx.getRound() > 1) {
+          const mutation = model.entities.PlayerEntity.update({
+            playerId: ctx.getPlayer().playerId,
+          });
+          if (building === "settlement") {
+            mutations.push(
+              mutation.subtract({ brick: 1, lumber: 1, grain: 1, wool: 1 }).go()
+            );
+          } else {
+            mutations.push(mutation.subtract({ grain: 2, ore: 3 }).go());
+          }
+        }
+
         return {
-          mutations: [
-            model.entities.BuildingEntity.create({
-              ...coords,
-              building,
-              gameId: ctx.getGame().gameId,
-              playerId: ctx.getPlayer().playerId,
-            }).go(),
-          ],
+          mutations,
           response: {},
         };
       },

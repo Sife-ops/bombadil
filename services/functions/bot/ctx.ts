@@ -33,10 +33,7 @@ export class Ctx {
     this.interactionResult = c.interactionResult;
     this.gameCollection = c.gameCollection;
     this.handlerType = process.env.HANDLER_TYPE as "bot" | "consumer";
-    this.service = {
-      sqs,
-      wsApi,
-    };
+    this.service = { sqs, wsApi };
   }
 
   static async init({
