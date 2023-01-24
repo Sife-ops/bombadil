@@ -224,6 +224,13 @@ export class Ctx {
     return !!this.getBuildings().find((building) => compareXY(building, b));
   }
 
+  hasSettlement(b: Coords) {
+    return (
+      this.getBuildings().find((building) => compareXY(building, b))
+        ?.building === "settlement"
+    );
+  }
+
   // websocket
   messageClient(connectionId: string, message: any) {
     return new Promise((resolve, reject) => {

@@ -48,8 +48,10 @@ export const building = (building: "settlement" | "city"): Command => ({
                   .getMapAdjacent("intersection", coords)
                   .find((intersection) => compareXY(intersection, building))
             ) ||
-          // building already exists
-          ctx.hasBuilding(coords)
+          // must place settlement on empty
+          (building === "settlement" && ctx.hasBuilding(coords)) ||
+          // must place city on settlement
+          (building === "city" && !ctx.hasSettlement(coords))
         ) {
           return genericResult("illegal move");
         }
@@ -62,6 +64,7 @@ export const building = (building: "settlement" | "city"): Command => ({
 
       consumer: async () => {
         const mutations: Promise<any>[] = [
+          // create building
           model.entities.BuildingEntity.create({
             ...coords,
             building,
@@ -70,10 +73,15 @@ export const building = (building: "settlement" | "city"): Command => ({
           }).go(),
         ];
 
+        // add victory point
+        const mutation = model.entities.PlayerEntity.update({
+          playerId: ctx.getPlayer().playerId,
+        }).add({
+          victory: 1,
+        });
+
+        // subtract cost
         if (ctx.getRound() > 1) {
-          const mutation = model.entities.PlayerEntity.update({
-            playerId: ctx.getPlayer().playerId,
-          });
           if (building === "settlement") {
             mutations.push(
               mutation.subtract({ brick: 1, lumber: 1, grain: 1, wool: 1 }).go()
@@ -81,6 +89,18 @@ export const building = (building: "settlement" | "city"): Command => ({
           } else {
             mutations.push(mutation.subtract({ grain: 2, ore: 3 }).go());
           }
+        }
+
+        // remove settlement
+        if (building === "city") {
+          const { buildingId } = ctx
+            .getPlayerBuildings()
+            .find((b) => compareXY(b, coords))!;
+          mutations.push(
+            model.entities.BuildingEntity.remove({
+              buildingId,
+            }).go()
+          );
         }
 
         return {

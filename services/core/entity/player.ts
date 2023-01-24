@@ -113,6 +113,12 @@ export const PlayerEntity = new Entity(
         required: true,
         default: 0,
       },
+
+      victory: {
+        type: "number",
+        required: true,
+        default: 0,
+      },
     },
 
     model: {

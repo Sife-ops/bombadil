@@ -56,6 +56,7 @@ export const road: Command = {
 
       consumer: async () => {
         const mutations: Promise<any>[] = [
+          // create road
           model.entities.RoadEntity.create({
             x1: from.x,
             y1: from.y,
@@ -66,15 +67,13 @@ export const road: Command = {
           }).go(),
         ];
 
+        // subtract cost
         if (ctx.getRound() > 1) {
           mutations.push(
             model.entities.PlayerEntity.update({
               playerId: ctx.getPlayer().playerId,
             })
-              .subtract({
-                brick: 1,
-                lumber: 1,
-              })
+              .subtract({ brick: 1, lumber: 1 })
               .go()
           );
         }
