@@ -1,6 +1,5 @@
 import { Command } from "@bombadil/bot/runner";
 import { TerrainEntityType } from "@bombadil/core/entity";
-import { model } from "@bombadil/core/model";
 
 import {
   genericResponse,
@@ -183,12 +182,12 @@ export const start: Command = {
           mutations: [
             // 3) create entities
             ...resources.map((e) =>
-              model.entities.TerrainEntity.create(e).go()
+              ctx.model.entities.TerrainEntity.create(e).go()
             ),
             ...resources
               .filter((e) => e.terrain !== "desert")
               .map(({ x, y }) =>
-                model.entities.ChitEntity.create({
+                ctx.model.entities.ChitEntity.create({
                   gameId,
                   value: chitChooser(),
                   x,
@@ -198,7 +197,7 @@ export const start: Command = {
             ...resources
               .filter((e) => e.terrain === "desert")
               .map((e) =>
-                model.entities.RobberEntity.create({
+                ctx.model.entities.RobberEntity.create({
                   gameId,
                   x: e.x,
                   y: e.y,
@@ -206,7 +205,7 @@ export const start: Command = {
               ),
             ...harbors.map(({ x, y }) => {
               const chosen = harborChooser();
-              return model.entities.HarborEntity.create({
+              return ctx.model.entities.HarborEntity.create({
                 gameId,
                 // @ts-ignore
                 resource: chosen,
@@ -218,7 +217,7 @@ export const start: Command = {
 
             // 4) player order and color
             ...ctx.getInteractionResultPlayers().map((player, i) =>
-              model.entities.PlayerEntity.update(player)
+              ctx.model.entities.PlayerEntity.update(player)
                 .set({
                   playerIndex: i,
                   color: colorChooser(),
@@ -227,7 +226,7 @@ export const start: Command = {
             ),
 
             // 5) start game
-            model.entities.GameEntity.update({
+            ctx.model.entities.GameEntity.update({
               channelId,
               gameId,
             })

@@ -1,7 +1,21 @@
 import * as Entity from "./entity";
 import { Service } from "electrodb";
 
-export const model = new Service({
+export type Model = {
+  UserEntity: typeof Entity.UserEntity;
+  BuildingEntity: typeof Entity.BuildingEntity;
+  ChitEntity: typeof Entity.ChitEntity;
+  GameEntity: typeof Entity.GameEntity;
+  HarborEntity: typeof Entity.HarborEntity;
+  MapEntity: typeof Entity.MapEntity;
+  PlayerEntity: typeof Entity.PlayerEntity;
+  RoadEntity: typeof Entity.RoadEntity;
+  TerrainEntity: typeof Entity.TerrainEntity;
+  ConnectionEntity: typeof Entity.ConnectionEntity;
+  RobberEntity: typeof Entity.RobberEntity;
+};
+
+export const model = new Service<Model>({
   UserEntity: Entity.UserEntity,
   BuildingEntity: Entity.BuildingEntity,
   ChitEntity: Entity.ChitEntity,

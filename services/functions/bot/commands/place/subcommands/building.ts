@@ -1,6 +1,5 @@
 import { Command } from "@bombadil/bot/runner";
 import { Ctx } from "@bombadil/bot/ctx";
-import { model } from "@bombadil/core/model";
 import { genericResponse, genericResult } from "@bombadil/bot/common";
 import { compareXY, Coords } from "@bombadil/lib";
 
@@ -65,7 +64,7 @@ export const building = (building: "settlement" | "city"): Command => ({
       consumer: async () => {
         const mutations: Promise<any>[] = [
           // create building
-          model.entities.BuildingEntity.create({
+          ctx.model.entities.BuildingEntity.create({
             ...coords,
             building,
             gameId: ctx.getGame().gameId,
@@ -74,7 +73,7 @@ export const building = (building: "settlement" | "city"): Command => ({
         ];
 
         // add victory point
-        const mutation = model.entities.PlayerEntity.update({
+        const mutation = ctx.model.entities.PlayerEntity.update({
           playerId: ctx.getPlayer().playerId,
         }).add({
           victory: 1,
@@ -97,7 +96,7 @@ export const building = (building: "settlement" | "city"): Command => ({
             .getPlayerBuildings()
             .find((b) => compareXY(b, coords))!;
           mutations.push(
-            model.entities.BuildingEntity.remove({
+            ctx.model.entities.BuildingEntity.remove({
               buildingId,
             }).go()
           );

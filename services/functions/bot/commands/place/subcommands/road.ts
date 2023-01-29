@@ -1,5 +1,4 @@
 import { Command } from "@bombadil/bot/runner";
-import { model } from "@bombadil/core/model";
 import { genericResponse, genericResult } from "@bombadil/bot/common";
 import { compareXY, Coords } from "@bombadil/lib";
 
@@ -57,7 +56,7 @@ export const road: Command = {
       consumer: async () => {
         const mutations: Promise<any>[] = [
           // create road
-          model.entities.RoadEntity.create({
+          ctx.model.entities.RoadEntity.create({
             x1: from.x,
             y1: from.y,
             x2: to.x,
@@ -70,7 +69,7 @@ export const road: Command = {
         // subtract cost
         if (ctx.getRound() > 1) {
           mutations.push(
-            model.entities.PlayerEntity.update({
+            ctx.model.entities.PlayerEntity.update({
               playerId: ctx.getPlayer().playerId,
             })
               .subtract({ brick: 1, lumber: 1 })

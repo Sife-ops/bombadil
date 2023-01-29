@@ -1,6 +1,5 @@
 import { Command } from "@bombadil/bot/runner";
 import { genericResponse, genericResult } from "@bombadil/bot/common";
-import { model } from "@bombadil/core/model";
 
 export const remove: Command = {
   handler: async (ctx) => {
@@ -26,7 +25,7 @@ export const remove: Command = {
         if (!player) return;
         return {
           mutations: [
-            model.entities.PlayerEntity.remove({
+            ctx.model.entities.PlayerEntity.remove({
               playerId: player.playerId,
             }).go(),
           ],

@@ -1,5 +1,5 @@
 import { Command } from "../runner";
-import { genericResponse, genericResult } from "@bombadil/bot/common";
+import { genericResult } from "@bombadil/bot/common";
 
 export const foo: Command = {
   handler: async () => {

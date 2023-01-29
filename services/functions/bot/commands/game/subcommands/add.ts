@@ -1,5 +1,4 @@
 import { Command } from "@bombadil/bot/runner";
-import { model } from "@bombadil/core/model";
 import { genericResponse, genericResult } from "@bombadil/bot/common";
 
 export const add: Command = {
@@ -19,7 +18,7 @@ export const add: Command = {
       consumer: async () => {
         return {
           mutations: [
-            model.entities.PlayerEntity.create({
+            ctx.model.entities.PlayerEntity.create({
               gameId,
               userId,
               color: "",

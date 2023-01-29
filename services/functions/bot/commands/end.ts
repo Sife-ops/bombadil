@@ -1,5 +1,4 @@
 import { Command } from "../runner";
-import { model } from "@bombadil/core/model";
 import { adjXY, compareXY } from "@bombadil/lib";
 
 import {
@@ -46,7 +45,7 @@ export const end: Command = {
         console.log("nextTurnRound", nextTurnRound);
 
         let mutations: Promise<any>[] = [
-          model.entities.GameEntity.update({
+          ctx.model.entities.GameEntity.update({
             channelId: ctx.getChannelId(),
             gameId: ctx.getGame().gameId,
           })
@@ -71,7 +70,7 @@ export const end: Command = {
           const r = t[Math.floor(Math.random() * t.length)];
           const rb = ctx.getGameCollection().RobberEntity[0];
           mutations.push(
-            model.entities.RobberEntity.update({
+            ctx.model.entities.RobberEntity.update({
               robberId: rb.robberId,
             })
               .set({ x: r.x, y: r.y })
@@ -105,7 +104,7 @@ export const end: Command = {
                 return [
                   ...a,
                   ...c.buildings.map((b) => {
-                    return model.entities.PlayerEntity.update({
+                    return ctx.model.entities.PlayerEntity.update({
                       playerId: b.playerId,
                     })
                       .add({ [c.resource]: b.building === "city" ? 2 : 1 })

@@ -1,5 +1,5 @@
 import AWS from "aws-sdk";
-import { GameCollection, model } from "@bombadil/core/model";
+import { GameCollection, model as model_ } from "@bombadil/core/model";
 import { Queue } from "@serverless-stack/node/queue";
 import { WebSocketApi } from "@serverless-stack/node/api";
 import { onboardUser, OptionSchema } from "./common";
@@ -23,6 +23,7 @@ export class Ctx {
   gameCollection;
   handlerType;
   service;
+  model = model_;
 
   private constructor(c: {
     interactionBody: any;
@@ -43,14 +44,14 @@ export class Ctx {
     interactionBody: any;
     interactionResult?: Partial<GameCollection>;
   }) {
-    const gameCollection = await model.entities.GameEntity.query
+    const gameCollection = await model_.entities.GameEntity.query
       .channel({ channelId: interactionBody.channel_id })
       .where(({ winner }, { notExists }) => notExists(winner))
       .go()
       .then(({ data }) => data[0])
       .then((game) => {
         if (!game) return undefined;
-        return model.collections
+        return model_.collections
           .game({ gameId: game.gameId })
           .go()
           .then((e) => e.data);
